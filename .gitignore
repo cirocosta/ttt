@@ -6,8 +6,10 @@ callgrind.*
 cachegrind.*
 .ycm_extra_conf.py
 
-ttt-client
-ttt-server
-
-!include/ttt/
+build/
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
+install_manifest.txt
 
