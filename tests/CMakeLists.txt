@@ -1,3 +1,12 @@
-include_directories(${yyy_INCLUDE_DIRS})
+include_directories(${ttt_INCLUDE_DIRS})
 
+file(GLOB tests "*.cc")
+foreach(file ${tests})
+  get_filename_component(testname ${file} NAME_WE)
+
+  add_executable(${testname} ${file})
+  target_link_libraries(${testname} gtest gtest_main ${ttt_LIBRARIES})
+  add_test(NAME ${testname} COMMAND ${testname})
+
+endforeach()
 
