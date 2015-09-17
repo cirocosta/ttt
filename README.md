@@ -4,7 +4,38 @@
 
 Over TCP all user info (and password) are encrypted w/ TLS.
 
-## server
+
+## Runnning
+
+First, build the project:
+
+```sh
+$ mkdir build  $$ cd $_
+$ cmake -Dtest=ON ..      # config for building w/ tests
+                          # will build gtest as well
+$ make -j4                # build w/ 4 cores
+```
+
+Then run the binaries:
+
+```sh
+
+$ ./bin/ttt-server &      # run the server in the background
+$ ./bin/ttt-client        # initialize a client
+```
+
+## Project Structure
+
+```
+.
+├── bin/       final executables 
+├── include/   header includes (ttt_INCLUDE_DIRS)
+├── lib/       dependencies (gtest)
+├── src/       obj sources  
+└── tests/     tests
+```
+
+## Server
 
 Centralizes all information about login, state of matches and players and the pontuation. If for some reason a player connection fails for some reason and the match was in its middle, if the player who disconnected gets back and the other player stays without playing with others then the match can be resumed.
 
@@ -20,7 +51,8 @@ It must:
   -   UDP players are only allowed to talk with other UDP players. The same for TCP. It's server responsibility to manage this.
 -   keep a log file informing the events
 
-## client
+
+## Client
 
 Conects to the server and from a list of connected players it can choose an adversary to play against.
 
@@ -34,7 +66,7 @@ Conects to the server and from a list of connected players it can choose an adve
 -   Encrypt user info and pwd
 
 
-## protocol
+## Protocol
 
 -   user registration
 -   login

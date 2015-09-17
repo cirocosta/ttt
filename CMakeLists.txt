@@ -41,6 +41,11 @@ SET(${PROJECT_NAME}_LIBRARIES ${LIBRARIES}
   FORCE
 )
 
+# bin
+
+add_subdirectory(bin/)
+
+
 # test
 
 if (test)
