@@ -4,7 +4,6 @@
 *.pyc
 callgrind.*
 cachegrind.*
-.ycm_extra_conf.py
 
 build/
 CMakeCache.txt
