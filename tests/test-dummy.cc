@@ -1,12 +1,13 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
+
 #include <iostream>
+
+using ::testing::AtLeast;
 
 class Turtle
 {
-  virtual ~Turtle()
-  {
-  }
+public:
   virtual void PenUp() = 0;
   virtual void PenDown() = 0;
   virtual void Forward(int distance) = 0;
@@ -16,7 +17,44 @@ class Turtle
   virtual int GetY() const = 0;
 };
 
-TEST(Dummy, hue)
+class MockTurtle : public Turtle
 {
-  EXPECT_EQ(1, 1);
+public:
+  MOCK_METHOD0(PenUp, void());
+  MOCK_METHOD0(PenDown, void());
+  MOCK_METHOD1(Forward, void(int distance));
+  MOCK_METHOD1(Turn, void(int degrees));
+  MOCK_METHOD2(GoTo, void(int x, int y));
+  MOCK_CONST_METHOD0(GetX, int());
+  MOCK_CONST_METHOD0(GetY, int());
+};
+
+class Painter
+{
+  Turtle* m_turtle;
+
+public:
+  Painter(Turtle* turtle) : m_turtle(turtle)
+  {
+  }
+  ~Painter()
+  {
+  }
+
+  bool DrawCircle(int x, int y, int r)
+  {
+    m_turtle->PenDown();
+    return true;
+  }
+};
+
+TEST(PainterTest, CanDrawSomething)
+{
+  MockTurtle turtle;
+
+  EXPECT_CALL(turtle, PenDown()).Times(AtLeast(1));
+
+  Painter painter(&turtle);
+
+  EXPECT_TRUE(painter.DrawCircle(0, 0, 10));
 }

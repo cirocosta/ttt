@@ -15,8 +15,7 @@ namespace ttt
 namespace net
 {
 
-// socktype determines whether we're going with udp or tcp
-struct addrinfo *getaddr(const std::string &host, int socktype);
+typedef struct sockaddr SA;
 
 inline int Socket(int family, int type, int protocol)
 {

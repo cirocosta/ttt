@@ -1,7 +1,10 @@
 #ifndef TTT__COMMON_H
 #define TTT__COMMON_H
 
+#include "ttt/constants.hh"
+
 #include <cstdio>
+#include <stdexcept>
 #include <cstdlib>
 #include <cstring>
 #include <errno.h>

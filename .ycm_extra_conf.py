@@ -38,8 +38,8 @@ flags = [
     'c++',
     '-std=c++11',
 
-    '-isystem /usr/include',
-    '-isystem /usr/include/c++/4.9',
+    '-I/usr/include',
+    '-I/usr/include/c++/4.9',
 
     '-I./include',
     '-I./lib/googletest/googletest/include',

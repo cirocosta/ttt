@@ -5,7 +5,7 @@ foreach(file ${tests})
   get_filename_component(testname ${file} NAME_WE)
 
   add_executable(${testname} ${file})
-  target_link_libraries(${testname} gtest gmock gtest_main ${ttt_LIBRARIES})
+  target_link_libraries(${testname} gtest gmock gmock_main ${ttt_LIBRARIES})
   add_test(NAME ${testname} COMMAND ${testname})
 
 endforeach()
