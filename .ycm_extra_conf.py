@@ -36,10 +36,14 @@ import ycm_core
 flags = [
     '-x',
     'c++',
-    '-I/usr/include',
-    '-I/usr/include/c++/4.9',
-    '-I/home/ciro/Development/CPP/ttt/include',
     '-std=c++11',
+
+    '-isystem /usr/include',
+    '-isystem /usr/include/c++/4.9',
+
+    '-I./include',
+    '-I./lib/googletest/googletest/include',
+    '-I./lib/googletest/googlemock/include',
 ]
 
 

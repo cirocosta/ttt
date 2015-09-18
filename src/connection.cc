@@ -20,9 +20,9 @@ Connection::Connection(std::string hname, uint16_t port, ConnectionType type)
   }
 }
 
-void Connection::connect()
-{
-}
+/* void Connection::connect() */
+/* { */
+/* } */
 void Connection::accept()
 {
 }
@@ -32,7 +32,7 @@ void Connection::listen()
   net::getaddr(m_hostname, m_socktype);
 }
 
-struct addrinfo* Connection::_getAddr(const std::string& host)
+struct addrinfo* Connection::_getAddr(const std::string& host) const
 {
   int n;
   struct addrinfo hints;

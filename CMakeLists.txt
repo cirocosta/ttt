@@ -49,9 +49,14 @@ add_subdirectory(bin/)
 # test
 
 if (test)
-  add_subdirectory(lib/googletest)
+  add_subdirectory(lib/googletest/googlemock)
+
   enable_testing()
   include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+  include_directories(${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
+
+  message("Gtest include = ${gtest_SOURCE_DIR}/include")
+  message("gmock include = ${gmock_SOURCE_DIR}/include")
 
   add_subdirectory(tests/)
 endif(test)
