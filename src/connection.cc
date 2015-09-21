@@ -30,6 +30,13 @@ Connection::Connection(std::string hname, uint16_t port, ConnectionType type)
   }
 }
 
+
+void Connection::write(const std::string& content) const
+{
+  Write(m_sockfd, content.c_str(), content.length());
+}
+
+
 void Connection::connect()
 {
   struct addrinfo* original_addr = _getAddr(m_hostname, m_port);
@@ -41,15 +48,17 @@ void Connection::connect()
   do {
     fd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
 
-    if (!~fd)
+    if (!~fd) {
       continue;
+    }
+
     if (!::connect(fd, addr->ai_addr, addr->ai_addrlen))
       break;
 
     net::Close(fd);
   } while ((addr = addr->ai_next));
 
-  // TODO do not fail on this, but return an 
+  // TODO do not fail on this, but return an
   //      error or something to recover from
   ASSERT(addr, "No valid address found.");
 
@@ -69,6 +78,7 @@ void Connection::listen()
     throw std::logic_error("Listen must be used w/ a passive socket.");
 
   do {
+    std::cout << "IS UDP = " << isUDP() << std::endl;
     fd = net::Socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
     if (fd < 0)
       continue;
@@ -85,7 +95,9 @@ void Connection::listen()
   } while ((addr = addr->ai_next) != NULL);
 
   ASSERT(addr, "No valid address found.");
-  net::Listen(fd, TTT_MAX_BACKLOG);
+
+  if (!isUDP())
+    net::Listen(fd, TTT_MAX_BACKLOG);
 
   inet_ntop(AF_INET, addr->ai_addr, buf, NAME_MAX);
   setAddrinfo(original_addr, addr);

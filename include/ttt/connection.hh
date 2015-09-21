@@ -54,12 +54,16 @@ public:
   Connection(std::string hostname, uint16_t port, ConnectionType t);
   ~Connection();
 
+  void write(const std::string& content) const;
+  /* void read(); */
   void connect();
+
   ConnectionPtr accept() const;
   void listen();
 
   inline const std::string getHostname() { return m_hostname; }
   inline const uint16_t getPort() { return m_port; }
+  inline const int getSocket() { return m_sockfd; }
 
   inline void setAddrinfo(struct addrinfo* start, struct addrinfo* curr)
   {
@@ -69,6 +73,8 @@ public:
   inline void setSocket(int socket) { m_sockfd = socket; }
   inline void setPort(uint16_t port) { m_port = port; }
   inline void setHostname(const std::string& buf) { m_hostname = buf; }
+
+  inline bool isUDP() { return m_socktype == SOCK_DGRAM; }
 
 private:
   struct addrinfo* _getAddr(const std::string& host, uint16_t port) const;

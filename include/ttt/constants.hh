@@ -2,5 +2,6 @@
 #define TTT__CONSTANTS_HH 
 
 #define TTT_MAX_BACKLOG 16
+#define TTT_DEFAULT_PORT 1337
 
 #endif
