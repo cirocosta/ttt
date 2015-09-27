@@ -3,6 +3,7 @@
 
 #define TTT_MAX_BACKLOG 16
 #define TTT_DEFAULT_PORT 1337
+#define TTT_MAX_BUFSIZE 2048
 
 namespace ttt
 {

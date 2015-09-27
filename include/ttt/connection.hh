@@ -40,16 +40,18 @@ private:
   int m_socktype;
   int m_sockfd;
   AddressInfo m_addrinfo;
+  ConnectionType m_type;
 
 protected:
+  char p_buf[TTT_MAX_BUFSIZE];
   Connection();
 
 public:
   Connection(const std::string& hostname, uint16_t port, ConnectionType t);
   ~Connection();
 
-  virtual void write(const std::string& content) const;
-  virtual void read() const { }
+  ssize_t write(const std::string& content) const;
+  ssize_t read();
 
   void connect();               //  client
   ConnectionPtr accept() const; //  server
@@ -58,9 +60,11 @@ public:
   inline bool isUDP() { return m_socktype == SOCK_DGRAM; }
   inline bool isPassive() { return m_passive; }
 
-  inline const std::string getHostname() { return m_hostname; }
-  inline const uint16_t getPort() { return m_port; }
-  inline const int getSocket() { return m_sockfd; }
+  inline const std::string getHostname() const { return m_hostname; }
+  inline const uint16_t getPort() const { return m_port; }
+  inline const int getSocket() const { return m_sockfd; }
+  inline const char* getBuffer() const { return p_buf; }
+  inline const ConnectionType getType() const { return m_type; }
 
   inline void setAddrinfo(struct addrinfo* start, struct addrinfo* curr)
   {

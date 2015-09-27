@@ -14,21 +14,35 @@ namespace net
 class TLSConnection;
 typedef std::unique_ptr<TLSConnection> TLSConnectionPtr;
 
-class TLSConnection : public Connection
+class TLSConnection
 {
 private:
   SSL_CTX* m_ctx;
   SSL* m_ssl;
+  ConnectionPtr m_connection;
 
   TLSConnection(); // the TLS connection that is prepared with
                    // SSL_new (see client_handling_example).
 public:
   TLSConnection(const std::string& hostname, uint16_t port,
                 ConnectionType type);
+  TLSConnection(ConnectionPtr& connection)
+  {
+    Connection* conn = connection.release();
+    m_connection = ConnectionPtr(conn);
+  }
+
   ~TLSConnection();
 
-  virtual void write(const std::string& content) const {}
-  virtual void read() const {}
+  inline ssize_t write(const std::string& content) const
+  {
+    return SSL_write(m_ssl, content.c_str(), content.size());
+  }
+  inline ssize_t read()
+  {
+    return SSL_read(m_ssl, (void*)m_connection->getBuffer(), TTT_MAX_BUFSIZE);
+  }
+
   void connect_tls();
   TLSConnectionPtr accept_tls();
 

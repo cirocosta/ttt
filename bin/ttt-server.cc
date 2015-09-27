@@ -46,6 +46,10 @@ void tls_connection()
             << " waiting for clients" << std::endl;
   client_conn = conn.accept_tls();
   std::cout << "client Connected: " << client_conn->getHostname() << std::endl;
+
+  while (client_conn->read() > 0) {
+    LOG("Server received: %s", client_conn->getBuffer());
+  }
 }
 
 int main(int argc, char *argv[])

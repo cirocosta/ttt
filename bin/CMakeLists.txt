@@ -15,17 +15,3 @@ add_custom_command(
   -E copy_directory
   ${PROJECT_SOURCE_DIR}/certs ${PROJECT_BINARY_DIR}/certs
 )
-
-# create softlinks to binary files
-
-add_custom_command(
-    TARGET ttt-server POST_BUILD
-    COMMAND ln -s ${CMAKE_CURRENT_BINARY_DIR}/ttt-server 
-                  ${PROJECT_BINARY_DIR}/ttt-server
-)
-
-add_custom_command(
-    TARGET ttt-client POST_BUILD
-    COMMAND ln -s ${CMAKE_CURRENT_BINARY_DIR}/ttt-client 
-                  ${PROJECT_BINARY_DIR}/ttt-client
-)

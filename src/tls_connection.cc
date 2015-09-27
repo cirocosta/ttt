@@ -7,11 +7,11 @@ namespace net
 
 TLSConnection::TLSConnection(const std::string& hostname, uint16_t port,
                              ConnectionType type)
-    : Connection{ hostname, port, type }
 {
+  m_connection = ConnectionPtr(new Connection(hostname, port, type));
   const SSL_METHOD* method;
 
-  if (isPassive()) {
+  if (m_connection->isPassive()) {
     method = TLSv1_2_server_method();
   } else {
     method = TLSv1_2_client_method();
@@ -22,7 +22,7 @@ TLSConnection::TLSConnection(const std::string& hostname, uint16_t port,
     exit(EXIT_FAILURE);
   }
 
-  if (isPassive()) {
+  if (m_connection->isPassive()) {
     _load_certificates();
   } else {
     m_ssl = SSL_new(m_ctx);
@@ -39,19 +39,20 @@ TLSConnection::~TLSConnection()
 TLSConnectionPtr TLSConnection::accept_tls()
 {
   SSL* ssl = SSL_new(m_ctx);
-  TLSConnectionPtr conn(static_cast<TLSConnection*>(accept().release()));
+  ConnectionPtr tcp_conn = m_connection->accept();
+  TLSConnectionPtr tls_conn(new TLSConnection(tcp_conn));
 
-  SSL_set_fd(ssl, conn->getSocket());
+  SSL_set_fd(ssl, tls_conn->m_connection->getSocket());
   ASSERT(~SSL_accept(ssl), "");
 
-  conn->m_ssl = ssl;
+  tls_conn->m_ssl = ssl;
 
-  return conn;
+  return tls_conn;
 }
 
 void TLSConnection::connect_tls()
 {
-  SSL_set_fd(m_ssl, getSocket());
+  SSL_set_fd(m_ssl, m_connection->getSocket());
 
   if (!~SSL_connect(m_ssl)) {
     ERR_print_errors_fp(stderr);
@@ -75,6 +76,31 @@ void TLSConnection::_load_certificates()
 
   ASSERT(SSL_CTX_check_private_key(m_ctx),
          "Private key does not match the public certificate\n");
+}
+
+// TODO generate a string w/ sstream
+void TLSConnection::display_certs()
+{
+  X509* cert;
+  char* line;
+
+  cert = SSL_get_peer_certificate(m_ssl);
+
+  if (!cert) {
+    fprintf(stderr, "No certificates.\n");
+    return;
+  }
+
+  fprintf(stderr, "Server certificates:\n");
+  line = X509_NAME_oneline(X509_get_subject_name(cert), 0, 0);
+  fprintf(stderr, "\tSubject: %s\n", line);
+  delete line;
+
+  line = X509_NAME_oneline(X509_get_issuer_name(cert), 0, 0);
+  fprintf(stderr, "Issuer: %s\n", line);
+
+  delete line;
+  X509_free(cert);
 }
 }
 };

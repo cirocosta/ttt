@@ -9,7 +9,7 @@ Connection::Connection() {}
 
 Connection::Connection(const std::string& hname, uint16_t port,
                        ConnectionType type)
-    : m_hostname(hname), m_port(port)
+    : m_hostname(hname), m_port(port), m_type(type)
 {
   switch (type) {
     case TCP_ACTIVE:
@@ -33,9 +33,15 @@ Connection::Connection(const std::string& hname, uint16_t port,
   }
 }
 
-void Connection::write(const std::string& content) const
+ssize_t Connection::write(const std::string& content) const
 {
-  Write(m_sockfd, content.c_str(), content.length());
+  return Write(m_sockfd, content.c_str(), content.length());
+}
+
+ssize_t Connection::read()
+{
+  memset(p_buf, '\0', TTT_MAX_BUFSIZE);
+  return ::read(getSocket(), p_buf, TTT_MAX_BUFSIZE);
 }
 
 void Connection::connect()
