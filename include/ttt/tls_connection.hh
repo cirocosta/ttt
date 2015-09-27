@@ -11,6 +11,9 @@ namespace ttt
 namespace net
 {
 
+class TLSConnection;
+typedef std::unique_ptr<TLSConnection> TLSConnectionPtr;
+
 class TLSConnection : public Connection
 {
 private:
@@ -26,25 +29,26 @@ public:
 
   virtual void write(const std::string& content) const;
   /* virtual void read(); */
-  virtual void connect();
+  void connect_tls();
+  TLSConnectionPtr accept_tls();
 
   // FIXME refactor this
   void client_handling_example(int fd)
   {
-    char buf[256] = {0};
+    char buf[256] = { 0 };
     int sd = -1;
     // creates a new SSL structure needed to hold the data
     // for a TLS connection. It inherits the settings of the underlying
     // context (ctx).
-    SSL *ssl = SSL_new(m_ctx);
+    SSL* ssl = SSL_new(m_ctx);
     SSL_set_fd(ssl, fd);
 
     ASSERT(~SSL_accept(ssl), "");
-    
+
     // do some read
     SSL_read(ssl, buf, sizeof(buf));
     // SSL_write ...
-    
+
     sd = SSL_get_fd(ssl);
     SSL_free(ssl);
     close(sd);
@@ -57,6 +61,9 @@ public:
     OpenSSL_add_all_algorithms();
     SSL_load_error_strings();
   }
+
+  void display_certs();
+
 private:
   void _load_certificates();
 };

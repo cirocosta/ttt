@@ -36,7 +36,20 @@ TLSConnection::~TLSConnection()
   SSL_CTX_free(m_ctx);
 }
 
-void TLSConnection::connect()
+TLSConnectionPtr TLSConnection::accept_tls()
+{
+  SSL* ssl = SSL_new(m_ctx);
+  TLSConnectionPtr conn(static_cast<TLSConnection*>(accept().release()));
+
+  SSL_set_fd(ssl, conn->getSocket());
+  ASSERT(~SSL_accept(ssl), "");
+
+  conn->m_ssl = ssl;
+
+  return conn;
+}
+
+void TLSConnection::connect_tls()
 {
   SSL_set_fd(m_ssl, getSocket());
 

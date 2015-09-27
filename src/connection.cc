@@ -79,7 +79,6 @@ void Connection::listen()
     throw std::logic_error("Listen must be used w/ a passive socket.");
 
   do {
-    std::cout << "IS UDP = " << isUDP() << std::endl;
     fd = net::Socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
     if (fd < 0)
       continue;
