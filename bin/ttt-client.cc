@@ -1,4 +1,5 @@
 #include "ttt/connection.hh"
+#include "ttt/tls_connection.hh"
 
 #include <string>
 #include <iostream>
@@ -18,19 +19,40 @@ const static char* CLI_HELP =
     "\t-u\tUse UDP instead of TCP [optional]\n"
     "\n";
 
-void echo_udp(net::Connection& conn)
+void udp_connection()
 {
+  net::ConnectionType conn_type = net::UDP_ACTIVE;
+  net::Connection conn{ "localhost", TTT_DEFAULT_PORT, conn_type };
+
+  LOGERR("Will talk with: %s through %s", conn.getHostname().c_str(),
+         conn.isUDP() ? "UDP" : "TCP");
+
   conn.connect();
-  // send something
   for (std::string line; std::getline(std::cin, line);) {
     conn.write(line);
   }
 }
 
-void echo_tcp(net::Connection& conn)
+void tcp_connection()
 {
-  conn.connect();
+  net::ConnectionType conn_type = net::TCP_ACTIVE;
+  net::Connection conn{ "localhost", TTT_DEFAULT_PORT, conn_type };
 
+  LOGERR("Will talk with: %s through %s", conn.getHostname().c_str(),
+         conn.isUDP() ? "UDP" : "TCP");
+
+  conn.connect();
+  for (std::string line; std::getline(std::cin, line);) {
+    LOGERR("TCP\tJust said: %s", line.c_str());
+  }
+}
+
+void tls_connection()
+{
+  net::TLSConnection::initialize_TLS();
+  net::TLSConnection conn{ "localhost", TTT_DEFAULT_PORT, net::TLS_ACTIVE };
+
+  conn.connect();
   for (std::string line; std::getline(std::cin, line);) {
     LOGERR("TCP\tJust said: %s", line.c_str());
   }
@@ -38,24 +60,7 @@ void echo_tcp(net::Connection& conn)
 
 int main(int argc, char* argv[])
 {
-  if (argc < 2) {
-    fprintf(stderr, "%s", CLI_HELP);
-    return 1;
-  }
-
-  net::ConnectionType conn_type = argc == 3 ? net::TTT_CONNECTION_UDP_ACTIVE
-                                            : net::TTT_CONNECTION_TCP_ACTIVE;
-  net::Connection conn{ std::string(argv[1]), TTT_DEFAULT_PORT, conn_type };
-
-  LOGERR("argc = %d", argc);
-  LOGERR("Will talk with: %s through %s", conn.getHostname().c_str(),
-         conn.isUDP() ? "UDP" : "TCP");
-
-  if (conn.isUDP()) {
-    echo_udp(conn);
-  } else {
-    echo_tcp(conn);
-  }
+  tls_connection();
 
   return 0;
 }

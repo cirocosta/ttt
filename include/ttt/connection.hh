@@ -49,11 +49,11 @@ public:
   ~Connection();
 
   virtual void write(const std::string& content) const;
-  virtual void read();
+  virtual void read() const { }
 
-  virtual void connect();         //  client
-  ConnectionPtr accept() const;   //  server
-  void listen();                  //  server
+  void connect();               //  client
+  ConnectionPtr accept() const; //  server
+  void listen();                //  server
 
   inline bool isUDP() { return m_socktype == SOCK_DGRAM; }
   inline bool isPassive() { return m_passive; }

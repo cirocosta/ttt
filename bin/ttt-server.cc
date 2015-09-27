@@ -1,4 +1,5 @@
 #include "ttt/connection.hh"
+#include "ttt/tls_connection.hh"
 
 #include <iostream>
 
@@ -6,8 +7,7 @@ using namespace ttt;
 
 void udp_connection()
 {
-  net::Connection conn{ "localhost", TTT_DEFAULT_PORT,
-                        net::TTT_CONNECTION_UDP_PASSIVE };
+  net::Connection conn{ "localhost", TTT_DEFAULT_PORT, net::UDP_PASSIVE };
   net::ConnectionPtr client_conn;
   char buf[1024] = { 0 };
   int n;
@@ -24,8 +24,7 @@ void udp_connection()
 
 void tcp_connection()
 {
-  net::Connection conn{ "localhost", TTT_DEFAULT_PORT,
-                        net::TTT_CONNECTION_TCP_PASSIVE };
+  net::Connection conn{ "localhost", TTT_DEFAULT_PORT, net::TCP_PASSIVE };
   net::ConnectionPtr client_conn;
 
   conn.listen();
@@ -36,10 +35,25 @@ void tcp_connection()
   std::cout << "client Connected: " << client_conn->getHostname() << std::endl;
 }
 
+void tls_connection()
+{
+  net::TLSConnection conn{ "localhost", TTT_DEFAULT_PORT, net::TLS_PASSIVE };
+  net::TLSConnectionPtr client_conn;
+
+  conn.listen();
+
+  std::cout << "Server at " << conn.getHostname() << ":" << conn.getPort()
+            << " waiting for clients" << std::endl;
+  client_conn = conn.accept_tls();
+  std::cout << "client Connected: " << client_conn->getHostname() << std::endl;
+}
+
 int main(int argc, char *argv[])
 {
+  net::TLSConnection::initialize_TLS();
   /* tcp_connection(); */
-  udp_connection();
+  /* udp_connection(); */
+  tls_connection();
 
   return 0;
 }

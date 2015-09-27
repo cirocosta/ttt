@@ -1,14 +1,22 @@
 # ttt
 
-> Tic Tac Toe over TCP and UDP
+> **Tic Tac Toe** over TCP and UDP
 
-Over TCP all user info (and password) are encrypted w/ TLS.
+Over TCP all user info (and password) are encrypted with TLS.
 
 ## Runnning
 
 Make sure that you have OpenSSL installed. This is necessary for the TLS support (in Ubuntu-a-like sytems: `# apt-get install openssl libssl-dev`).
 
-First, build the project:
+If you're willing to run a server, generate a certificate:
+
+```sh
+$ ./generate-cert.sh
+```
+
+This command will run `OpenSSL` and output the certificate and private key into `/certs`.
+
+Now, build the project (out of tree):
 
 ```sh
 $ mkdir build  $$ cd $_
@@ -20,9 +28,8 @@ $ make -j4                # build w/ 4 cores
 Then run the binaries:
 
 ```sh
-
-$ ./bin/ttt-server &      # run the server in the background
-$ ./bin/ttt-client        # initialize a client
+$ ./ttt-server &      # run the server in the background
+$ ./ttt-client        # initialize a client
 ```
 
 ## Project Structure
@@ -30,6 +37,7 @@ $ ./bin/ttt-client        # initialize a client
 ```
 .
 ├── bin/       final executables 
+├── certs/     certificate and private key generated
 ├── include/   header includes (ttt_INCLUDE_DIRS)
 ├── lib/       dependencies (gtest)
 ├── src/       obj sources  

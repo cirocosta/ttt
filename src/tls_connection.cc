@@ -7,7 +7,7 @@ namespace net
 
 TLSConnection::TLSConnection(const std::string& hostname, uint16_t port,
                              ConnectionType type)
-    : Connection(hostname, port, type)
+    : Connection{ hostname, port, type }
 {
   const SSL_METHOD* method;
 
