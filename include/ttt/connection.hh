@@ -2,6 +2,7 @@
 #define TTT__CONNECTION_HH
 
 #include "ttt/unet.hh"
+#include "ttt/constants.hh"
 
 #include <arpa/inet.h>
 #include <linux/limits.h>
@@ -27,13 +28,6 @@ struct AddressInfo {
   }
 };
 
-typedef enum ConnectionType {
-  TTT_CONNECTION_UDP_ACTIVE,
-  TTT_CONNECTION_UDP_PASSIVE,
-  TTT_CONNECTION_TCP_ACTIVE,
-  TTT_CONNECTION_TCP_PASSIVE,
-} ConnectionType;
-
 class Connection;
 typedef std::unique_ptr<Connection> ConnectionPtr;
 
@@ -51,15 +45,18 @@ protected:
   Connection();
 
 public:
-  Connection(std::string hostname, uint16_t port, ConnectionType t);
+  Connection(const std::string& hostname, uint16_t port, ConnectionType t);
   ~Connection();
 
-  void write(const std::string& content) const;
-  /* void read(); */
-  void connect();
+  virtual void write(const std::string& content) const;
+  virtual void read();
 
-  ConnectionPtr accept() const;
-  void listen();
+  virtual void connect();         //  client
+  ConnectionPtr accept() const;   //  server
+  void listen();                  //  server
+
+  inline bool isUDP() { return m_socktype == SOCK_DGRAM; }
+  inline bool isPassive() { return m_passive; }
 
   inline const std::string getHostname() { return m_hostname; }
   inline const uint16_t getPort() { return m_port; }
@@ -73,8 +70,6 @@ public:
   inline void setSocket(int socket) { m_sockfd = socket; }
   inline void setPort(uint16_t port) { m_port = port; }
   inline void setHostname(const std::string& buf) { m_hostname = buf; }
-
-  inline bool isUDP() { return m_socktype == SOCK_DGRAM; }
 
 private:
   struct addrinfo* _getAddr(const std::string& host, uint16_t port) const;

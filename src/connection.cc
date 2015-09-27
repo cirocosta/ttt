@@ -7,23 +7,26 @@ namespace net
 
 Connection::Connection() {}
 
-Connection::Connection(std::string hname, uint16_t port, ConnectionType type)
+Connection::Connection(const std::string& hname, uint16_t port,
+                       ConnectionType type)
     : m_hostname(hname), m_port(port)
 {
   switch (type) {
-    case TTT_CONNECTION_TCP_ACTIVE:
+    case TCP_ACTIVE:
+    case TLS_ACTIVE:
       m_passive = false;
       m_socktype = ::SOCK_STREAM;
       break;
-    case TTT_CONNECTION_TCP_PASSIVE:
+    case TCP_PASSIVE:
+    case TLS_PASSIVE:
       m_passive = true;
       m_socktype = ::SOCK_STREAM;
       break;
-    case TTT_CONNECTION_UDP_ACTIVE:
+    case UDP_ACTIVE:
       m_passive = false;
       m_socktype = ::SOCK_DGRAM;
       break;
-    case TTT_CONNECTION_UDP_PASSIVE:
+    case UDP_PASSIVE:
       m_passive = true;
       m_socktype = ::SOCK_DGRAM;
       break;
