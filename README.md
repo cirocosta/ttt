@@ -4,8 +4,9 @@
 
 Over TCP all user info (and password) are encrypted w/ TLS.
 
-
 ## Runnning
+
+Make sure that you have OpenSSL installed. This is necessary for the TLS support (in Ubuntu-a-like sytems: `# apt-get install openssl libssl-dev`).
 
 First, build the project:
 

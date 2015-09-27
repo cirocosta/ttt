@@ -30,12 +30,10 @@ Connection::Connection(std::string hname, uint16_t port, ConnectionType type)
   }
 }
 
-
 void Connection::write(const std::string& content) const
 {
   Write(m_sockfd, content.c_str(), content.length());
 }
-
 
 void Connection::connect()
 {
@@ -99,7 +97,7 @@ void Connection::listen()
   if (!isUDP())
     net::Listen(fd, TTT_MAX_BACKLOG);
 
-  inet_ntop(AF_INET, addr->ai_addr, buf, NAME_MAX);
+  PASSERT(inet_ntop(AF_INET, addr->ai_addr, buf, NAME_MAX), "inet_ntop: ");
   setAddrinfo(original_addr, addr);
   setSocket(fd);
   setHostname(std::string(buf));
@@ -114,7 +112,7 @@ ConnectionPtr Connection::accept() const
 
   conn->setSocket(net::Accept(m_sockfd, (SA*)&new_addr, &len));
 
-  inet_ntop(AF_INET, &new_addr.sin_addr, buf, NAME_MAX);
+  PASSERT(inet_ntop(AF_INET, &new_addr.sin_addr, buf, NAME_MAX), "inet_ntop: ");
   conn->setPort(ntohs(new_addr.sin_port));
   conn->setHostname(std::string(buf));
 
