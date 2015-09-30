@@ -36,11 +36,11 @@ class Connection
 private:
   std::string m_hostname;
   uint16_t m_port;
+  ConnectionType m_type;
+  int m_sockfd;
   bool m_passive;
   int m_socktype;
-  int m_sockfd;
   AddressInfo m_addrinfo;
-  ConnectionType m_type;
 
 protected:
   char p_buf[TTT_MAX_BUFSIZE];

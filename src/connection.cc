@@ -9,7 +9,7 @@ Connection::Connection() {}
 
 Connection::Connection(const std::string& hname, uint16_t port,
                        ConnectionType type)
-    : m_hostname(hname), m_port(port), m_type(type)
+    : m_hostname(hname), m_port(port), m_type(type), m_sockfd(-1)
 {
   switch (type) {
     case TCP_ACTIVE:
@@ -33,6 +33,11 @@ Connection::Connection(const std::string& hname, uint16_t port,
   }
 }
 
+Connection::~Connection() { 
+  if (~m_sockfd)
+    net::Close(m_sockfd); 
+}
+
 ssize_t Connection::write(const std::string& content) const
 {
   return Write(m_sockfd, content.c_str(), content.length());
@@ -53,11 +58,8 @@ void Connection::connect()
   ASSERT(original_addr, "Address %s:%u not found", m_hostname.c_str(), m_port);
 
   do {
-    fd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
-
-    if (!~fd) {
+    if (!~(fd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol)))
       continue;
-    }
 
     if (!::connect(fd, addr->ai_addr, addr->ai_addrlen))
       break;
@@ -158,6 +160,5 @@ struct addrinfo* Connection::_getAddr(const std::string& host,
   return res;
 }
 
-Connection::~Connection() { net::Close(m_sockfd); }
 }
 };

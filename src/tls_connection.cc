@@ -7,11 +7,11 @@ namespace net
 
 TLSConnection::TLSConnection(const std::string& hostname, uint16_t port,
                              ConnectionType type)
+    : Connection(hostname, port, type)
 {
-  m_connection = ConnectionPtr(new Connection(hostname, port, type));
   const SSL_METHOD* method;
 
-  if (m_connection->isPassive()) {
+  if (isPassive()) {
     method = TLSv1_2_server_method();
   } else {
     method = TLSv1_2_client_method();
@@ -22,11 +22,16 @@ TLSConnection::TLSConnection(const std::string& hostname, uint16_t port,
     exit(EXIT_FAILURE);
   }
 
-  if (m_connection->isPassive()) {
+  if (isPassive()) {
     _load_certificates();
   } else {
     m_ssl = SSL_new(m_ctx);
   }
+}
+TLSConnection::TLSConnection(ConnectionPtr& conn)
+{
+  Connection(conn->getHostname(), conn->getPort(), conn->getType());
+  setSocket(conn->getSocket());
 }
 
 TLSConnection::~TLSConnection()
@@ -39,10 +44,10 @@ TLSConnection::~TLSConnection()
 TLSConnectionPtr TLSConnection::accept_tls()
 {
   SSL* ssl = SSL_new(m_ctx);
-  ConnectionPtr tcp_conn = m_connection->accept();
+  ConnectionPtr tcp_conn = accept();
   TLSConnectionPtr tls_conn(new TLSConnection(tcp_conn));
 
-  SSL_set_fd(ssl, tls_conn->m_connection->getSocket());
+  SSL_set_fd(ssl, tls_conn->getSocket());
   ASSERT(~SSL_accept(ssl), "");
 
   tls_conn->m_ssl = ssl;
@@ -52,7 +57,7 @@ TLSConnectionPtr TLSConnection::accept_tls()
 
 void TLSConnection::connect_tls()
 {
-  SSL_set_fd(m_ssl, m_connection->getSocket());
+  SSL_set_fd(m_ssl, getSocket());
 
   if (!~SSL_connect(m_ssl)) {
     ERR_print_errors_fp(stderr);
