@@ -17,6 +17,7 @@ typedef std::unique_ptr<TLSConnection> TLSConnectionPtr;
 class TLSConnection
 {
 private:
+  static bool m_OpenSSL_initialized;
   SSL_CTX* m_ctx;
   SSL* m_ssl;
   ConnectionPtr m_connection;
@@ -37,7 +38,7 @@ public:
   void connect();
   TLSConnectionPtr accept();
 
-  static void initialize_TLS()
+  static void initialize_OpenSSL()
   {
     SSL_library_init();
     OpenSSL_add_all_algorithms();

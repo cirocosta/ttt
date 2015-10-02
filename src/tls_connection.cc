@@ -5,6 +5,8 @@ namespace ttt
 namespace net
 {
 
+bool TLSConnection::m_OpenSSL_initialized = false;
+
 TLSConnection::TLSConnection(const std::string& hostname, uint16_t port,
                              ConnectionType type)
     : m_ctx(nullptr), m_ssl(nullptr)
@@ -23,6 +25,11 @@ TLSConnection::TLSConnection(ConnectionPtr& conn)
 void TLSConnection::_init()
 {
   const SSL_METHOD* method;
+
+  if (!m_OpenSSL_initialized) {
+    TLSConnection::initialize_OpenSSL();
+    m_OpenSSL_initialized = true;
+  }
 
   if (m_connection->isPassive())
     method = TLSv1_2_server_method();

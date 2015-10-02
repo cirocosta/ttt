@@ -6,7 +6,6 @@ using namespace ttt::net;
 
 TEST(TLSConnection, SingleConnectionCreationAndDeletion)
 {
-  TLSConnection::initialize_TLS();
   TLSConnection conn_act("localhost", 1337, TLS_ACTIVE);
 
   ASSERT_TRUE(conn_act.getConnection());
@@ -18,7 +17,6 @@ TEST(TLSConnection, SingleConnectionCreationAndDeletion)
 #if 0 
 TEST(TLSConnection, MultipleConnectionCreationAndDeletion)
 {
-  TLSConnection::initialize_TLS();
   TLSConnection conn_act("localhost", 1337, TLS_ACTIVE);
   TLSConnection conn_pas("localhost", 1337, TLS_PASSIVE);
 
@@ -32,7 +30,6 @@ TEST(TLSConnection, MultipleConnectionCreationAndDeletion)
 
 TEST(TLSConnection, LooseCreationAndDeletion)
 {
-  TLSConnection::initialize_TLS();
   ConnectionPtr conn_tcp =
       ConnectionPtr(new Connection("localhost", 1337, TCP_ACTIVE));
 

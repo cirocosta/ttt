@@ -41,7 +41,6 @@ void tcp_connection()
 
 void tls_connection()
 {
-  net::TLSConnection::initialize_TLS();
   net::TLSConnection conn{ "localhost", TTT_DEFAULT_PORT, net::TLS_PASSIVE };
   net::TLSConnectionPtr client_conn;
 

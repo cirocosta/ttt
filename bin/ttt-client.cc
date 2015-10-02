@@ -49,7 +49,6 @@ void tcp_connection()
 
 void tls_connection()
 {
-  net::TLSConnection::initialize_TLS();
   net::TLSConnection conn{ "localhost", TTT_DEFAULT_PORT, net::TLS_ACTIVE };
 
   conn.connect();
