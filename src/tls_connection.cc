@@ -32,7 +32,7 @@ void TLSConnection::_init()
 
   if (!(m_ctx = SSL_CTX_new(method))) {
     ERR_print_errors_fp(stderr);
-    exit(EXIT_FAILURE);
+    throw std::runtime_error("Couldn't create SSL ctx");
   }
 
   if (m_connection->isPassive()) {

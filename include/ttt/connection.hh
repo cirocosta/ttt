@@ -44,7 +44,7 @@ private:
 
 protected:
   char p_buf[TTT_MAX_BUFSIZE];
-  Connection();
+  Connection(ConnectionType type);
 
 public:
   Connection(const std::string& hostname, uint16_t port, ConnectionType t);

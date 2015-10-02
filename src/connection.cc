@@ -5,11 +5,7 @@ namespace ttt
 namespace net
 {
 
-Connection::Connection() : m_sockfd(-1) {}
-
-Connection::Connection(const std::string& hname, uint16_t port,
-                       ConnectionType type)
-    : m_hostname(hname), m_port(port), m_type(type), m_sockfd(-1)
+Connection::Connection(ConnectionType type) : m_type(type), m_sockfd(-1)
 {
   // FIXME maybe we shouldn't know about TLS here ...
   switch (type) {
@@ -32,6 +28,14 @@ Connection::Connection(const std::string& hname, uint16_t port,
       m_socktype = ::SOCK_DGRAM;
       break;
   }
+}
+
+Connection::Connection(const std::string& hname, uint16_t port,
+                       ConnectionType type)
+    : Connection(type)
+{
+  m_hostname = hname;
+  m_port = port;
 }
 
 Connection::~Connection()
@@ -120,7 +124,7 @@ ConnectionPtr Connection::accept() const
   struct sockaddr_in new_addr;
   socklen_t len;
   char buf[NAME_MAX] = { 0 };
-  ConnectionPtr conn = ConnectionPtr(new Connection());
+  ConnectionPtr conn = ConnectionPtr(new Connection(TCP_ACTIVE));
 
   conn->setType(TCP_PASSIVE);
   conn->setSocket(net::Accept(m_sockfd, (SA*)&new_addr, &len));
