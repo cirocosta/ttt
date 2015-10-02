@@ -52,9 +52,9 @@ void tls_connection()
   net::TLSConnection::initialize_TLS();
   net::TLSConnection conn{ "localhost", TTT_DEFAULT_PORT, net::TLS_ACTIVE };
 
-  conn.connect();
+  conn.getConnection()->connect();
   for (std::string line; std::getline(std::cin, line);) {
-    LOGERR("TCP\tJust said: %s", line.c_str());
+    LOGERR("TLS\tJust said: %s", line.c_str());
   }
 }
 

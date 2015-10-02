@@ -13,6 +13,7 @@ namespace net
 const static char* TLS_FNAME_CERTIFICATE = "./certs/cert.pem";
 const static char* TLS_FNAME_PKEY = "./certs/private.pem";
 
+// TODO maybe we should remove TLS from here ...
 typedef enum ConnectionType {
   UDP_ACTIVE,
   UDP_PASSIVE,

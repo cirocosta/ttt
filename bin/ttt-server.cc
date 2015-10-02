@@ -40,18 +40,22 @@ void tls_connection()
   net::TLSConnection conn{ "localhost", TTT_DEFAULT_PORT, net::TLS_PASSIVE };
   net::TLSConnectionPtr client_conn;
 
-  conn.listen();
+  conn.getConnection()->listen();
 
-  std::cout << "Server at " << conn.getHostname() << ":" << conn.getPort()
-            << " waiting for clients" << std::endl;
+  // TODO provide a display
+  std::cout << "Server at " << conn.getConnection()->getHostname() << ":"
+            << conn.getConnection()->getPort() << " waiting for clients"
+            << std::endl;
   client_conn = conn.accept_tls();
-  std::cout << "client Connected: " << client_conn->getHostname() << std::endl;
+  std::cout << "client Connected: "
+            << client_conn->getConnection()->getHostname() << std::endl;
 
   while (client_conn->read() > 0) {
-    LOG("Server received: %s", client_conn->getBuffer());
+    LOG("Server received: %s", client_conn->getConnection()->getBuffer());
   }
 }
 
+// TEST ONLY
 int main(int argc, char *argv[])
 {
   net::TLSConnection::initialize_TLS();

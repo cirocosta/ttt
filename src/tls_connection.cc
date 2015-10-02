@@ -7,11 +7,24 @@ namespace net
 
 TLSConnection::TLSConnection(const std::string& hostname, uint16_t port,
                              ConnectionType type)
-    : Connection(hostname, port, type)
+    : m_ctx(nullptr), m_ssl(nullptr)
+{
+  m_connection = ConnectionPtr(new Connection(hostname, port, type));
+  _init();
+}
+
+TLSConnection::TLSConnection(ConnectionPtr& conn)
+{
+  conn->setType(conn->getType() == TCP_ACTIVE ? TLS_ACTIVE : TLS_PASSIVE);
+  m_connection = std::move(conn);
+  _init();
+}
+
+void TLSConnection::_init()
 {
   const SSL_METHOD* method;
 
-  if (isPassive()) {
+  if (m_connection->isPassive()) {
     method = TLSv1_2_server_method();
   } else {
     method = TLSv1_2_client_method();
@@ -22,32 +35,29 @@ TLSConnection::TLSConnection(const std::string& hostname, uint16_t port,
     exit(EXIT_FAILURE);
   }
 
-  if (isPassive()) {
+  if (m_connection->isPassive()) {
     _load_certificates();
   } else {
     m_ssl = SSL_new(m_ctx);
   }
 }
-TLSConnection::TLSConnection(ConnectionPtr& conn)
-{
-  Connection(conn->getHostname(), conn->getPort(), conn->getType());
-  setSocket(conn->getSocket());
-}
+
 
 TLSConnection::~TLSConnection()
 {
   if (m_ssl)
     SSL_free(m_ssl);
-  SSL_CTX_free(m_ctx);
+  if (m_ctx)
+    SSL_CTX_free(m_ctx);
 }
 
 TLSConnectionPtr TLSConnection::accept_tls()
 {
   SSL* ssl = SSL_new(m_ctx);
-  ConnectionPtr tcp_conn = accept();
+  ConnectionPtr tcp_conn = m_connection->accept();
   TLSConnectionPtr tls_conn(new TLSConnection(tcp_conn));
 
-  SSL_set_fd(ssl, tls_conn->getSocket());
+  SSL_set_fd(ssl, tls_conn->m_connection->getSocket());
   ASSERT(~SSL_accept(ssl), "");
 
   tls_conn->m_ssl = ssl;
@@ -57,7 +67,7 @@ TLSConnectionPtr TLSConnection::accept_tls()
 
 void TLSConnection::connect_tls()
 {
-  SSL_set_fd(m_ssl, getSocket());
+  SSL_set_fd(m_ssl, m_connection->getSocket());
 
   if (!~SSL_connect(m_ssl)) {
     ERR_print_errors_fp(stderr);
@@ -84,6 +94,7 @@ void TLSConnection::_load_certificates()
 }
 
 // TODO generate a string w/ sstream
+//      debugging only
 void TLSConnection::display_certs()
 {
   X509* cert;

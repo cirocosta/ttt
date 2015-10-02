@@ -71,7 +71,10 @@ public:
     m_addrinfo.start = start;
     m_addrinfo.curr = curr;
   }
+
+  inline void setPassive(bool passive) { m_passive = passive; }
   inline void setSocket(int socket) { m_sockfd = socket; }
+  inline void setType(ConnectionType type) { m_type = type; }
   inline void setPort(uint16_t port) { m_port = port; }
   inline void setHostname(const std::string& buf) { m_hostname = buf; }
 

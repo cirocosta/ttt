@@ -5,12 +5,13 @@ namespace ttt
 namespace net
 {
 
-Connection::Connection() {}
+Connection::Connection() : m_sockfd(-1) {}
 
 Connection::Connection(const std::string& hname, uint16_t port,
                        ConnectionType type)
     : m_hostname(hname), m_port(port), m_type(type), m_sockfd(-1)
 {
+  // FIXME maybe we shouldn't know about TLS here ...
   switch (type) {
     case TCP_ACTIVE:
     case TLS_ACTIVE:
@@ -33,9 +34,10 @@ Connection::Connection(const std::string& hname, uint16_t port,
   }
 }
 
-Connection::~Connection() { 
+Connection::~Connection()
+{
   if (~m_sockfd)
-    net::Close(m_sockfd); 
+    net::Close(m_sockfd);
 }
 
 ssize_t Connection::write(const std::string& content) const
@@ -120,6 +122,7 @@ ConnectionPtr Connection::accept() const
   char buf[NAME_MAX] = { 0 };
   ConnectionPtr conn = ConnectionPtr(new Connection());
 
+  conn->setType(TCP_PASSIVE);
   conn->setSocket(net::Accept(m_sockfd, (SA*)&new_addr, &len));
 
   PASSERT(inet_ntop(AF_INET, &new_addr.sin_addr, buf, NAME_MAX), "inet_ntop: ");
@@ -159,6 +162,5 @@ struct addrinfo* Connection::_getAddr(const std::string& host,
 
   return res;
 }
-
 }
 };
