@@ -44,8 +44,7 @@ TLSConnection::~TLSConnection()
 {
   if (m_ssl)
     SSL_free(m_ssl);
-
-  if (m_ctx)
+  if (m_ctx) 
     SSL_CTX_free(m_ctx);
 }
 

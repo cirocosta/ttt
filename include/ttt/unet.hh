@@ -1,6 +1,10 @@
 #ifndef TTT__UNET_HH
 #define TTT__UNET_HH
 
+/**
+ * Unix networking wrappers
+ */
+
 #include "ttt/common.hh"
 
 #include <string>
@@ -17,60 +21,45 @@ namespace net
 
 typedef struct sockaddr SA;
 
-inline int Socket(int family, int type, int protocol)
+static inline int Socket(int family, int type, int protocol)
 {
   int n;
-  ASSERT(~(n = socket(family, type, protocol)), "socket error: %s",
-         strerror(errno));
+  PASSERT(~(n = socket(family, type, protocol)), "socket error:");
   return n;
 }
 
-inline int Bind(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
+static inline int Bind(int sockfd, const struct sockaddr *addr,
+                       socklen_t addrlen)
 {
   int n;
-  ASSERT(~(n = bind(sockfd, addr, addrlen)), "bind error: %s", strerror(errno));
+  PASSERT(~(n = bind(sockfd, addr, addrlen)), "bind error:");
   return n;
 }
 
-inline int Listen(int sockfd, int backlog)
+static inline int Listen(int sockfd, int backlog)
 {
   int n;
-  ASSERT(~(n = listen(sockfd, backlog)), "bind error: %s", strerror(errno));
+  PASSERT(~(n = listen(sockfd, backlog)), "listen error:");
   return n;
 }
 
-inline int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)
+static inline int Accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen)
 {
   int n;
 
   *addrlen = sizeof(*addr);
+  
   // we could have an ECONNABORTED here, in which case we'd not
   // really exit w/ a failure, but ignore.
-  ASSERT(~(n = accept(sockfd, addr, addrlen)), "accept error: %s",
-         strerror(errno));
+  PASSERT(~(n = accept(sockfd, addr, addrlen)), "accept error:");
 
   return n;
 }
 
-inline int Close(int fd)
+static inline int Close(int fd)
 {
   int n;
-  ASSERT(~(n = close(fd)), "close error: %s", strerror(errno));
-  return n;
-}
-
-inline int Write(int fd, const void *buf, size_t count)
-{
-  int n;
-  ASSERT(~(n = write(fd, buf, count)), "write error: %s", strerror(errno));
-  return n;
-}
-
-inline int Connect(int sockfd, const struct sockaddr *addr, socklen_t addrlen)
-{
-  int n;
-  ASSERT(~(n = connect(sockfd, addr, addrlen)), "connect error: %s",
-         strerror(errno));
+  PASSERT(~(n = close(fd)), "close error:");
   return n;
 }
 }

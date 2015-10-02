@@ -49,7 +49,10 @@ Connection::~Connection()
 
 ssize_t Connection::write(const std::string& content) const
 {
-  return Write(m_sockfd, content.c_str(), content.length());
+  int n;
+  PASSERT(~(n = ::write(m_sockfd, content.c_str(), content.length())), "write error");
+
+  return n;
 }
 
 ssize_t Connection::read()
@@ -107,8 +110,6 @@ void Connection::listen()
       break;
 
     net::Close(fd);
-
-    // FIXME possible memleak here.
   } while ((addr = addr->ai_next) != NULL);
 
   ASSERT(addr, "No valid address found.");
@@ -117,6 +118,7 @@ void Connection::listen()
     net::Listen(fd, TTT_MAX_BACKLOG);
 
   PASSERT(inet_ntop(AF_INET, addr->ai_addr, buf, NAME_MAX), "inet_ntop: ");
+
   setAddrinfo(original_addr, addr);
   setSocket(fd);
   setHostname(std::string(buf));
