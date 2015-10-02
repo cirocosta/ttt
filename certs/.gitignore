@@ -1,2 +1,6 @@
 *
+
+# dummy certificates
+!cert.pem
+!private.pem
 !.gitignore
