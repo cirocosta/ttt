@@ -22,6 +22,7 @@ private:
   ConnectionPtr m_connection;
 
   void _init();
+
 public:
   TLSConnection(const std::string& hostname, uint16_t port,
                 ConnectionType type);
@@ -30,18 +31,11 @@ public:
 
   inline Connection* getConnection() const { return m_connection.get(); }
 
-  inline ssize_t write(const std::string& content) const
-  {
-    return SSL_write(m_ssl, content.c_str(), content.size());
-  }
+  ssize_t write(const std::string& content) const;
+  ssize_t read();
 
-  inline ssize_t read()
-  {
-    return SSL_read(m_ssl, (void*)m_connection->getBuffer(), TTT_MAX_BUFSIZE);
-  }
-
-  void connect_tls();
-  TLSConnectionPtr accept_tls();
+  void connect();
+  TLSConnectionPtr accept();
 
   static void initialize_TLS()
   {

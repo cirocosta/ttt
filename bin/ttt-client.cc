@@ -43,7 +43,7 @@ void tcp_connection()
 
   conn.connect();
   for (std::string line; std::getline(std::cin, line);) {
-    LOGERR("TCP\tJust said: %s", line.c_str());
+    conn.write(line);
   }
 }
 
@@ -52,14 +52,18 @@ void tls_connection()
   net::TLSConnection::initialize_TLS();
   net::TLSConnection conn{ "localhost", TTT_DEFAULT_PORT, net::TLS_ACTIVE };
 
-  conn.getConnection()->connect();
+  conn.connect();
+  LOGERR("Connection Established!");
+
   for (std::string line; std::getline(std::cin, line);) {
-    LOGERR("TLS\tJust said: %s", line.c_str());
+    conn.write(line);
   }
 }
 
 int main(int argc, char* argv[])
 {
+  /* tcp_connection(); */
+  /* udp_connection(); */
   tls_connection();
 
   return 0;

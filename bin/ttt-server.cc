@@ -33,32 +33,37 @@ void tcp_connection()
             << " waiting for clients" << std::endl;
   client_conn = conn.accept();
   std::cout << "client Connected: " << client_conn->getHostname() << std::endl;
+
+  while (client_conn->read() > 0) {
+    LOGERR("Server received: %s", client_conn->getBuffer());
+  }
 }
 
 void tls_connection()
 {
+  net::TLSConnection::initialize_TLS();
   net::TLSConnection conn{ "localhost", TTT_DEFAULT_PORT, net::TLS_PASSIVE };
   net::TLSConnectionPtr client_conn;
 
   conn.getConnection()->listen();
 
   // TODO provide a display
-  std::cout << "Server at " << conn.getConnection()->getHostname() << ":"
-            << conn.getConnection()->getPort() << " waiting for clients"
-            << std::endl;
-  client_conn = conn.accept_tls();
-  std::cout << "client Connected: "
-            << client_conn->getConnection()->getHostname() << std::endl;
+  LOGERR("Server at %s:%u waiting for clients",
+         conn.getConnection()->getHostname().c_str(),
+         conn.getConnection()->getPort());
+
+  client_conn = conn.accept();
+  LOGERR("Client connected: %s",
+         client_conn->getConnection()->getHostname().c_str());
 
   while (client_conn->read() > 0) {
-    LOG("Server received: %s", client_conn->getConnection()->getBuffer());
+    LOGERR("Server received: %s", client_conn->getConnection()->getBuffer());
   }
 }
 
 // TEST ONLY
 int main(int argc, char *argv[])
 {
-  net::TLSConnection::initialize_TLS();
   /* tcp_connection(); */
   /* udp_connection(); */
   tls_connection();

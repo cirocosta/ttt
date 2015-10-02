@@ -63,8 +63,8 @@ public:
   inline const std::string getHostname() const { return m_hostname; }
   inline const uint16_t getPort() const { return m_port; }
   inline const int getSocket() const { return m_sockfd; }
-  inline const char* getBuffer() const { return p_buf; }
   inline const ConnectionType getType() const { return m_type; }
+  inline char* getBuffer() const { return (char*)p_buf; }
 
   inline void setAddrinfo(struct addrinfo* start, struct addrinfo* curr)
   {

@@ -24,53 +24,78 @@ void TLSConnection::_init()
 {
   const SSL_METHOD* method;
 
-  if (m_connection->isPassive()) {
+  if (m_connection->isPassive())
     method = TLSv1_2_server_method();
-  } else {
+  else
     method = TLSv1_2_client_method();
-  }
 
   if (!(m_ctx = SSL_CTX_new(method))) {
     ERR_print_errors_fp(stderr);
     throw std::runtime_error("Couldn't create SSL ctx");
   }
 
-  if (m_connection->isPassive()) {
+  if (m_connection->isPassive())
     _load_certificates();
-  } else {
+  else
     m_ssl = SSL_new(m_ctx);
-  }
 }
-
 
 TLSConnection::~TLSConnection()
 {
   if (m_ssl)
     SSL_free(m_ssl);
+
   if (m_ctx)
     SSL_CTX_free(m_ctx);
 }
 
-TLSConnectionPtr TLSConnection::accept_tls()
+TLSConnectionPtr TLSConnection::accept()
 {
-  SSL* ssl = SSL_new(m_ctx);
+  int err;
   ConnectionPtr tcp_conn = m_connection->accept();
   TLSConnectionPtr tls_conn(new TLSConnection(tcp_conn));
+  SSL* ssl = SSL_new(m_ctx);
 
-  SSL_set_fd(ssl, tls_conn->m_connection->getSocket());
-  ASSERT(~SSL_accept(ssl), "");
+  ASSERT(SSL_set_fd(ssl, tls_conn->m_connection->getSocket()),
+         "Error in SSL_set_fd");
+
+  if ((err = SSL_accept(ssl)) < 1) {
+    LOGERR("An error raised during SSL_accept");
+
+    // FIXME understand openssl errors properly
+    switch ((err = SSL_get_error(ssl, err))) {
+      default:
+        LOGERR("Error %d", err);
+    }
+
+    ERR_print_errors_fp(stderr);
+    exit(EXIT_FAILURE);
+  }
 
   tls_conn->m_ssl = ssl;
 
   return tls_conn;
 }
 
-void TLSConnection::connect_tls()
+ssize_t TLSConnection::write(const std::string& content) const
 {
+  return SSL_write(m_ssl, content.c_str(), content.size());
+}
+
+ssize_t TLSConnection::read()
+{
+  memset(m_connection->getBuffer(), '\0', TTT_MAX_BUFSIZE);
+  return SSL_read(m_ssl, (void*)m_connection->getBuffer(), TTT_MAX_BUFSIZE);
+}
+
+void TLSConnection::connect()
+{
+  m_connection->connect();
   SSL_set_fd(m_ssl, m_connection->getSocket());
 
-  if (!~SSL_connect(m_ssl)) {
+  if (SSL_connect(m_ssl) < 1) {
     ERR_print_errors_fp(stderr);
+    LOGERR("Error connecting w/ TLS");
     exit(EXIT_FAILURE);
   }
 }

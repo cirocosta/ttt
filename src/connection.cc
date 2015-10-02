@@ -7,7 +7,6 @@ namespace net
 
 Connection::Connection(ConnectionType type) : m_type(type), m_sockfd(-1)
 {
-  // FIXME maybe we shouldn't know about TLS here ...
   switch (type) {
     case TCP_ACTIVE:
     case TLS_ACTIVE:
@@ -28,6 +27,8 @@ Connection::Connection(ConnectionType type) : m_type(type), m_sockfd(-1)
       m_socktype = ::SOCK_DGRAM;
       break;
   }
+
+  memset(p_buf, '\0', TTT_MAX_BUFSIZE);
 }
 
 Connection::Connection(const std::string& hname, uint16_t port,
@@ -36,6 +37,8 @@ Connection::Connection(const std::string& hname, uint16_t port,
 {
   m_hostname = hname;
   m_port = port;
+
+  memset(p_buf, '\0', TTT_MAX_BUFSIZE);
 }
 
 Connection::~Connection()
