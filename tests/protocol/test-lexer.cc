@@ -59,3 +59,23 @@ TEST(Lexer, Repl)
   ASSERT_TRUE(Lexer::reply(buf));
   ASSERT_EQ(0, strcmp(buf.token.buf, "RPL_OK"));
 }
+
+
+TEST(Lexer, Arg)
+{
+  std::string msg = "RPL_OK:Registration Ok!:\r\n";
+  Buffer buf(msg);
+
+  ASSERT_TRUE(Lexer::arg(buf));
+  ASSERT_EQ(0, strcmp(buf.token.buf, "RPL_OK"));
+
+  ASSERT_TRUE(Lexer::terminal(buf, ":", 1));
+
+  ASSERT_TRUE(Lexer::arg(buf));
+  ASSERT_EQ(0, strcmp(buf.token.buf, "Registration Ok!"));
+
+  ASSERT_TRUE(Lexer::terminal(buf, ":", 1));
+  ASSERT_TRUE(Lexer::terminal(buf, STR_CRLF.c_str(), STR_CRLF.size()));
+}
+
+

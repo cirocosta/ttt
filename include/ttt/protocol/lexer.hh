@@ -26,6 +26,7 @@ struct Lexer {
   static bool terminal(Buffer& buf, char const* terminal, unsigned size);
   static bool command(Buffer& buf);
   static bool reply(Buffer& buf);
+  static bool arg(Buffer& buf);
 };
 }
 };
