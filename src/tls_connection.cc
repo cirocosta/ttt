@@ -51,7 +51,7 @@ TLSConnection::~TLSConnection()
 {
   if (m_ssl)
     SSL_free(m_ssl);
-  if (m_ctx) 
+  if (m_ctx)
     SSL_CTX_free(m_ctx);
 }
 
@@ -108,8 +108,7 @@ void TLSConnection::connect()
 
 void TLSConnection::_load_certificates()
 {
-  if (SSL_CTX_use_certificate_file(m_ctx, TLS_FNAME_CERTIFICATE,
-                                   SSL_FILETYPE_PEM) <= 0) {
+  if (SSL_CTX_use_certificate_chain_file(m_ctx, TLS_FNAME_CERTIFICATE) <= 0) {
     ERR_print_errors_fp(stderr);
     exit(EXIT_FAILURE);
   }
