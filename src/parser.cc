@@ -23,7 +23,7 @@ void _ARGS(Buffer& buf)
 void _MESSAGE(Buffer& buf) {
   _CMD(buf);
   _ARGS(buf);
-  Lexer::terminal(buf, CRLF, sizeof(CRLF)); 
+  Lexer::terminal(buf, STR_CRLF.c_str(), STR_CRLF.size()); 
 }
 
 }

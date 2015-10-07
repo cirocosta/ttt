@@ -5,20 +5,17 @@ namespace ttt
 namespace protocol
 {
 
-static char const* _is_single_terminal(char const* la, char c)
+static char const* _is_terminal(char const* peek, char const* terminal,
+                                unsigned size)
 {
-  return *la == c ? ++la : NULL;
-}
+  if (size == 1)
+    return *peek == terminal[0] ? peek + 1 : NULL;
 
-
-static char const* _is_terminal(char const* peek, char const* terminal, unsigned size)
-{
   if (strncmp(peek, terminal, size))
     return NULL;
 
   return peek + size;
 }
-
 
 bool Lexer::terminal(Buffer& buf, char const* terminal, unsigned size)
 {
@@ -31,18 +28,32 @@ bool Lexer::terminal(Buffer& buf, char const* terminal, unsigned size)
   return true;
 }
 
+bool Lexer::command(Buffer& buf)
+{
+  char const* peek;
 
-/* int yi_lex_single_terminal(yi_buffer_t* buf, char c) */
-/* { */
-/*   char const* peek; */
+  if (!(peek = _is_terminal(buf.la, STR_CMD.c_str(), STR_CMD.size())))
+    return false;
 
-/*   if (!(peek = _is_single_terminal(buf->la, c))) */
-/*     return 0; */
+  while(peek && isalpha(*peek))
+    peek++;
+  buf.update(peek);
 
-/*   yi_buffer_update(buf, peek, YI_T_SINGLE_TERMINAL); */
+  return true;
+}
 
-/*   return 1; */
-/* } */
+bool Lexer::reply(Buffer& buf)
+{
+  char const* peek;
 
+  if (!(peek = _is_terminal(buf.la, STR_RPL.c_str(), STR_RPL.size())))
+    return false;
+
+  while(peek && isalpha(*peek))
+    peek++;
+  buf.update(peek);
+
+  return true;
+}
 }
 };

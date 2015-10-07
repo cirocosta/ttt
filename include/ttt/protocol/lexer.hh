@@ -3,15 +3,18 @@
 
 #include "ttt/protocol/buffer.hh"
 
-static const char* CRLF = "\r\n";
-static const char* COLON = ":";
-static const char* CMD_ = "CMD_";
-static const char* RPL_ = "RPL_";
 
 namespace ttt
 {
 namespace protocol
 {
+
+static const std::string STR_CRLF = "\r\n";
+static const std::string STR_COLON = ":";
+static const std::string STR_CMD = "CMD_";
+static const std::string STR_RPL = "RPL_";
+
+
 struct Lexer {
   /**
    * Returns a boolean in case it can lex properly.
@@ -21,8 +24,8 @@ struct Lexer {
    *  - returns false and keeps the buffer as it
    */
   static bool terminal(Buffer& buf, char const* terminal, unsigned size);
-  /* static bool command(Buffer* buf); */
-  /* static bool reply(Buffer* buf); */
+  static bool command(Buffer& buf);
+  static bool reply(Buffer& buf);
 };
 }
 };
