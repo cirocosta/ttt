@@ -1,6 +1,6 @@
 include_directories(${ttt_INCLUDE_DIRS})
 
-file(GLOB tests "*.cc")
+file(GLOB_RECURSE tests "*.cc")
 foreach(file ${tests})
   get_filename_component(testname ${file} NAME_WE)
 

@@ -4,10 +4,19 @@
 #include "ttt/connection.hh"
 #include "ttt/tls_connection.hh"
 
+/**
+ * - table of registered users
+ * - room states
+ *    - who's playing
+ *    - what's the current state of the game
+ * - scores
+ */
+
 namespace ttt
 {
 
 using namespace net;
+
 
 class Server
 {

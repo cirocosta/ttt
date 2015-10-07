@@ -90,7 +90,7 @@ Conects to the server and from a list of connected players it can choose an adve
 
 ### Grammar
 
-The grammar is made to be extremely simple to parse. All of the content is expected to be encoded in ASCII. The following grammar is written conforming to ABNF syntax rules (see https://tools.ietf.org/html/rfc5234).
+The grammar is made to be extremely simple to parse. All of the content is expected to be encoded in ASCII. The following grammar is written conforming to ABNF syntax rules (see [rfc 5234](https://tools.ietf.org/html/rfc5234)).
 
 `message`s are expected to be at max 512bytes long, ending with CRLF.
 

@@ -4,6 +4,7 @@
 #define TTT_MAX_BACKLOG 16
 #define TTT_DEFAULT_PORT 1337
 #define TTT_MAX_BUFSIZE 2048
+#define TTT_MAX_MESSAGE_SIZE 512
 
 namespace ttt
 {
@@ -22,6 +23,18 @@ typedef enum ConnectionType {
   TLS_ACTIVE,
   TLS_PASSIVE,
 } ConnectionType;
+}
+
+namespace protocol
+{
+
+typedef enum COMMAND {
+  CMD_REG = 1,
+  CMD_IN,
+  CMD_OUT,
+  CMD_HB,
+  CMD_UNDEFINED,
+} COMMAND;
 }
 
 }; // ! ns ttt
