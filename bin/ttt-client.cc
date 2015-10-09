@@ -61,9 +61,9 @@ void tls_connection()
 
 int main(int argc, char* argv[])
 {
-  /* tcp_connection(); */
+  tcp_connection();
   /* udp_connection(); */
-  tls_connection();
+  /* tls_connection(); */
 
   return 0;
 }

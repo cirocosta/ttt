@@ -50,7 +50,8 @@ Connection::~Connection()
 ssize_t Connection::write(const std::string& content) const
 {
   int n;
-  PASSERT(~(n = ::write(m_sockfd, content.c_str(), content.length())), "write error");
+  PASSERT(~(n = ::write(m_sockfd, content.c_str(), content.length())),
+          "write error");
 
   return n;
 }
@@ -122,6 +123,15 @@ void Connection::listen()
   setAddrinfo(original_addr, addr);
   setSocket(fd);
   setHostname(std::string(buf));
+}
+
+void Connection::makeNonBlocking()
+{
+  int flags, s;
+
+  PASSERT(~(flags = fcntl(getSocket(), F_GETFL, 0)), "fcntl:");
+  flags |= O_NONBLOCK;
+  PASSERT(~(s = fcntl(getSocket(), F_SETFL, flags)), "fcntl:");
 }
 
 ConnectionPtr Connection::accept() const

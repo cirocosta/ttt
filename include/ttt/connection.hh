@@ -5,6 +5,7 @@
 #include "ttt/constants.hh"
 #include "ttt/common.hh"
 
+#include <fcntl.h>
 #include <arpa/inet.h>
 #include <linux/limits.h>
 #include <iostream>
@@ -57,6 +58,8 @@ public:
   void connect();               //  client
   ConnectionPtr accept() const; //  server
   void listen();                //  server
+
+  void makeNonBlocking();
 
   inline bool isUDP() { return m_socktype == SOCK_DGRAM; }
   inline bool isPassive() { return m_passive; }
