@@ -11,7 +11,7 @@ TEST(ParseMessage, CMDRegOk)
                                                             "my_password" },
                           .command = CMD_REG };
   Message actual_msg = Parser::parse_msg(msg);
-  
+
   ASSERT_EQ(actual_msg.command, expected_msg.command);
   ASSERT_EQ(actual_msg.args.size(), expected_msg.args.size());
   ASSERT_EQ(actual_msg.args[0], expected_msg.args[0]);

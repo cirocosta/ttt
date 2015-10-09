@@ -7,17 +7,6 @@ namespace ttt
 namespace protocol
 {
 
-Message _MESSAGE(Buffer& buf);
-COMMAND _CMD(Buffer& buf);
-std::vector<std::string> _ARGS(Buffer& buf);
-
-Message Parser::parse_msg(std::string msg)
-{
-  Buffer buf(msg);
-
-  return _MESSAGE(buf);
-}
-
 COMMAND _CMD(Buffer& buf)
 {
   COMMAND cmd = CMD_UNDEFINED;
@@ -45,8 +34,10 @@ std::vector<std::string> _ARGS(Buffer& buf)
   return args;
 }
 
-Message _MESSAGE(Buffer& buf)
+Message Parser::parse_msg(std::string msg)
 {
+  Buffer buf(msg);
+
   COMMAND cmd = _CMD(buf);
   std::vector<std::string> args = _ARGS(buf);
   Lexer::terminal(buf, STR_CRLF.c_str(), STR_CRLF.size());
