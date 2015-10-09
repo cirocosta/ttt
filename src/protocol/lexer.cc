@@ -41,8 +41,18 @@ bool Lexer::terminal(Buffer& buf, char const* terminal, unsigned size)
 
   if (!(peek = _is_terminal(buf.la, terminal, size)))
     return false;
-  buf.update(peek);
+  buf.soft_update(peek);
 
+  return true;
+}
+
+bool Lexer::crlf(Buffer& buf)
+{
+  if (!Lexer::terminal(buf, STR_CRLF.c_str(), STR_CRLF.size()))
+    return false;
+
+  buf.column = 0;
+  buf.line++;
   return true;
 }
 

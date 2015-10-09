@@ -4,6 +4,20 @@
 using namespace ttt;
 using namespace ttt::protocol;
 
+// line feed
+inline void lf(Buffer& buf)
+{
+  buf.line++;
+  buf.column = 0;
+}
+
+// column feed
+inline void cf(Buffer& buf)
+{
+  buf.column++;
+  buf.la++;
+}
+
 TEST(Buffer, creation)
 {
   std::string msg = "message";
@@ -21,9 +35,9 @@ TEST(Buffer, ColumnFeed)
   std::string msg = "message";
   Buffer buf(msg);
 
-  buf.cf();
-  buf.cf();
-  buf.cf();
+  cf(buf);
+  cf(buf);
+  cf(buf);
 
   ASSERT_EQ(3, buf.column);
   ASSERT_EQ(0, buf.line);
@@ -36,11 +50,11 @@ TEST(Buffer, LineFeed)
   std::string msg = "message";
   Buffer buf(msg);
 
-  buf.cf();
-  buf.cf();
-  buf.cf();
-  buf.lf();
-  buf.cf();
+  cf(buf);
+  cf(buf);
+  cf(buf);
+  lf(buf);
+  cf(buf);
 
   ASSERT_EQ(1, buf.column);
   ASSERT_EQ(1, buf.line);
@@ -53,13 +67,27 @@ TEST(Buffer, Update)
   std::string msg = "message1 message2";
   Buffer buf(msg);
 
-  const char *peek = strstr(buf.buf, "message2");
+  const char* peek = strstr(buf.buf, "message2");
 
   buf.update(peek);
 
   ASSERT_EQ(9, buf.column);
   ASSERT_EQ(0, strcmp("message2", buf.la));
   ASSERT_EQ(0, strcmp("message1 ", buf.token.buf));
+}
+
+TEST(Buffer, SoftUpdate)
+{
+  std::string msg = "message1 message2";
+  Buffer buf(msg);
+
+  const char* peek = strstr(buf.buf, "message2");
+
+  buf.soft_update(peek);
+
+  ASSERT_EQ(9, buf.column);
+  ASSERT_EQ(0, strcmp("message2", buf.la));
+  ASSERT_EQ(0, strlen(buf.token.buf));
 }
 
 TEST(Buffer, Reset)
@@ -69,7 +97,7 @@ TEST(Buffer, Reset)
 
   Buffer buf(msg1);
 
-  buf.update(buf.la+3);
+  buf.update(buf.la + 3);
   ASSERT_EQ(3, buf.column);
 
   buf.reset(msg2.c_str(), msg2.size());

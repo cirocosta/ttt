@@ -12,6 +12,11 @@ namespace protocol
 struct Token {
   char buf[TTT_MAX_MESSAGE_SIZE];
   unsigned len;
+
+  Token () {
+    memset(buf, '\0', TTT_MAX_MESSAGE_SIZE);
+    len = 0;
+  }
 };
 
 struct Buffer {
@@ -24,26 +29,18 @@ struct Buffer {
 
   Buffer(std::string msg) { reset(msg.c_str(), msg.size()); }
 
-  // line feed
-  inline void lf()
-  {
-    line++;
-    column = 0;
-  }
-
-  // column feed
-  inline void cf(unsigned incr=1)
-  {
-    column+=incr;
-    la+=incr;
-  }
-
   void update(char const* peek)
   {
     token.len = peek - la;
     column += token.len;
     memcpy(token.buf, la, token.len);
     token.buf[token.len] = '\0';
+    la = peek;
+  }
+
+  inline void soft_update(char const* peek)
+  {
+    column += peek - la;
     la = peek;
   }
 

@@ -6,6 +6,8 @@
 #define TTT_MAX_BUFSIZE 2048
 #define TTT_MAX_MESSAGE_SIZE 512
 
+#include <map>
+
 namespace ttt
 {
 
@@ -35,6 +37,8 @@ typedef enum COMMAND {
   CMD_HB,
   CMD_UNDEFINED,
 } COMMAND;
+
+
 }
 
 }; // ! ns ttt
