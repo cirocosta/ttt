@@ -4,6 +4,9 @@
 #include "ttt/connection.hh"
 #include "ttt/tls_connection.hh"
 
+#include <sys/epoll.h>
+#include <map>
+
 /**
  * - table of registered users
  * - room states
@@ -17,16 +20,21 @@ namespace ttt
 
 using namespace net;
 
-
 class Server
 {
 private:
-  // server will handle all 3 kinds of 
-  // connections.
-  ConnectionPtr m_server_connection;
+  ConnectionPtr m_tcp_conn;
+  ConnectionPtr m_udp_conn;
+  std::map<int, ConnectionPtr> m_tcp_children;
+
+  struct epoll_event* m_tcp_conn_events;
+
 public:
   Server();
   ~Server();
+private:
+  void initUdpListener();   // one thread
+  void initTcpListener();   // another thread
 };
 };
 

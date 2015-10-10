@@ -5,6 +5,7 @@
 #define TTT_DEFAULT_PORT 1337
 #define TTT_MAX_BUFSIZE 2048
 #define TTT_MAX_MESSAGE_SIZE 512
+#define TTT_MAX_EPOLL_EVENTS 10
 
 #include <map>
 

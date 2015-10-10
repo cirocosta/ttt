@@ -13,20 +13,22 @@ TEST(TLSConnection, SingleConnectionCreationAndDeletion)
   ASSERT_EQ(conn_act.getConnection()->isPassive(), false);
 }
 
-// FIXME (after #3)
-#if 0 
 TEST(TLSConnection, MultipleConnectionCreationAndDeletion)
 {
   TLSConnection conn_act("localhost", 1337, TLS_ACTIVE);
-  TLSConnection conn_pas("localhost", 1337, TLS_PASSIVE);
+  TLSConnection conn_act2("localhost", 1338, TLS_ACTIVE);
+  TLSConnection conn_act3("localhost", 1339, TLS_ACTIVE);
+  /* TLSConnection conn_pas("localhost", 1337, TLS_PASSIVE); */
 
   ASSERT_EQ(conn_act.getConnection()->isUDP(), false);
   ASSERT_EQ(conn_act.getConnection()->isPassive(), false);
 
-  ASSERT_EQ(conn_pas.getConnection()->isUDP(), false);
-  ASSERT_EQ(conn_pas.getConnection()->isPassive(), true);
+  ASSERT_EQ(conn_act2.getConnection()->isUDP(), false);
+  ASSERT_EQ(conn_act2.getConnection()->isPassive(), false);
+
+  ASSERT_EQ(conn_act3.getConnection()->isUDP(), false);
+  ASSERT_EQ(conn_act3.getConnection()->isPassive(), false);
 }
-#endif
 
 TEST(TLSConnection, LooseCreationAndDeletion)
 {

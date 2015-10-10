@@ -139,11 +139,9 @@ ConnectionPtr Connection::accept() const
   struct sockaddr_in new_addr;
   socklen_t len;
   char buf[NAME_MAX] = { 0 };
-  ConnectionPtr conn = ConnectionPtr(new Connection(TCP_ACTIVE));
+  ConnectionPtr conn = ConnectionPtr(new Connection(TCP_PASSIVE));
 
-  conn->setType(TCP_PASSIVE);
   conn->setSocket(net::Accept(m_sockfd, (SA*)&new_addr, &len));
-
   PASSERT(inet_ntop(AF_INET, &new_addr.sin_addr, buf, NAME_MAX), "inet_ntop: ");
   conn->setPort(ntohs(new_addr.sin_port));
   conn->setHostname(std::string(buf));
