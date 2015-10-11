@@ -32,7 +32,7 @@ struct EPoll {
 
   void add(int fd, uint32_t flags)
   {
-    struct epoll_event ev;
+    struct epoll_event ev = {0};
 
     ev.data.fd = fd;
     ev.events = flags;
