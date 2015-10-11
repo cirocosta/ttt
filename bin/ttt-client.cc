@@ -1,5 +1,4 @@
-#include "ttt/connection.hh"
-#include "ttt/tls_connection.hh"
+#include "ttt/client.hh"
 
 #include <string>
 #include <iostream>
@@ -19,34 +18,7 @@ const static char* CLI_HELP =
     "\t-u\tUse UDP instead of TCP [optional]\n"
     "\n";
 
-void udp_connection()
-{
-  net::ConnectionType conn_type = net::UDP_ACTIVE;
-  net::Connection conn{ "localhost", TTT_DEFAULT_PORT, conn_type };
-
-  LOGERR("Will talk with: %s through %s", conn.getHostname().c_str(),
-         conn.isUDP() ? "UDP" : "TCP");
-
-  conn.connect();
-  for (std::string line; std::getline(std::cin, line);) {
-    conn.write(line);
-  }
-}
-
-void tcp_connection()
-{
-  net::ConnectionType conn_type = net::TCP_ACTIVE;
-  net::Connection conn{ "localhost", TTT_DEFAULT_PORT, conn_type };
-
-  LOGERR("Will talk with: %s through %s", conn.getHostname().c_str(),
-         conn.isUDP() ? "UDP" : "TCP");
-
-  conn.connect();
-  for (std::string line; std::getline(std::cin, line);) {
-    conn.write(line);
-  }
-}
-
+#if 0
 void tls_connection()
 {
   net::TLSConnection conn{ "localhost", TTT_DEFAULT_PORT, net::TLS_ACTIVE };
@@ -58,12 +30,26 @@ void tls_connection()
     conn.write(line);
   }
 }
+#endif 
 
 int main(int argc, char* argv[])
 {
-  /* tcp_connection(); */
-  udp_connection();
-  /* tls_connection(); */
+  bool useUdp = false;
+
+  if (argc < 2) {
+    std::cout << CLI_HELP << std::endl
+              << "Error: at least <address> must be specified"
+              << std::endl;
+    exit(EXIT_FAILURE);
+  }
+
+  std::string addr = argv[1];
+
+  if (argc == 3 && !strcmp(argv[2], "-u"))
+    useUdp = true;
+
+  Client client (addr, useUdp);
+  client.init();
 
   return 0;
 }
