@@ -19,7 +19,7 @@ void Board::paintOnBuffer(char* buf) const
   buf[12] = '\0';
 }
 
-bool Board::isMarked(BOARD_MARK mark, unsigned row, unsigned column)
+bool Board::isMarked(BOARD_MARK mark, unsigned row, unsigned column) const
 {
   char c = m_data[columnRowToPos(row, column)];
 

@@ -20,13 +20,15 @@ static const unsigned BOARD_OFFSET = 3;
  */
 class Board
 {
+  // uniquely identifies a board in the system
+  unsigned id;
   char m_data[TTT_BOARD_SIZE + 1];
 
 public:
   Board();
   ~Board();
 
-  bool isMarked(BOARD_MARK mark, unsigned row, unsigned column);
+  bool isMarked(BOARD_MARK mark, unsigned row, unsigned column) const;
   inline void mark(BOARD_MARK mark, unsigned row, unsigned column)
   {
     m_data[columnRowToPos(row, column)] = (mark == MARK_O ? 'O' : 'X');

@@ -1,9 +1,12 @@
-#include "ttt/connection.hh"
+#include "ttt/user.hh"
 #include "ttt/tls_connection.hh"
 
 #include <string>
 #include <iostream>
 
+using std::cout;
+using std::cin;
+using std::endl;
 using namespace ttt;
 
 const static char* CLI_HELP =
@@ -18,6 +21,24 @@ const static char* CLI_HELP =
     "Parameters:\n."
     "\t-u\tUse UDP instead of TCP [optional]\n"
     "\n";
+
+void login()
+{
+  std::string login;
+  std::string pwd;
+
+  cout << "Welcome to TTT!\n"
+       << "Please enter your userid and password.\n"
+       << "If you're not registered a new account will be created\n"
+       << "\n";
+
+  cout << "User: ";
+  cin >> login;
+  cout <<  "\nPassword: ";
+  cin >> pwd;
+  
+  User user(login, pwd);
+}
 
 void udp_connection()
 {

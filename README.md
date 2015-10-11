@@ -1,14 +1,35 @@
-# ttt
+#ttt
 
-> **Tic Tac Toe** over TCP and UDP
+> **Tic Tac Toe** over TCP (+TLS) and UDP.
 
-Over TCP all user info (and password) are encrypted with TLS.
+## Table of Contents
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+- [Runnning](#runnning)
+- [Project Structure](#project-structure)
+- [Server](#server)
+- [Client](#client)
+- [Structures](#structures)
+- [Protocol](#protocol)
+  - [Grammar](#grammar)
+  - [Commands](#commands)
+    - [REG](#reg)
+    - [IN](#in)
+    - [OUT](#out)
+    - [HB](#hb)
+    - [STATE](#state)
+  - [Replies](#replies)
+  - [LICENSE](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## Runnning
 
 Make sure that you have OpenSSL installed. This is necessary for the TLS support (in Ubuntu-a-like sytems: `# apt-get install openssl libssl-dev`).
 
-If you're willing to run a server, generate a certificate:
+If you're willing to run a server, generate a certificate and a private key:
 
 ```sh
 $ ./generate-cert.sh
@@ -16,12 +37,14 @@ $ ./generate-cert.sh
 
 This command will run `OpenSSL` and output the certificate and private key into `/certs`.
 
+*(TODO: we should add a symmetric encryption step here so that the private key would be encrypted, increasing security)*
+
 Now, build the project (out of tree):
 
 ```sh
 $ mkdir build  $$ cd $_
 $ cmake -Dtest=ON ..      # config for building w/ tests
-                          # will build gtest as well
+#will build gtest as well
 $ make -j4                # build w/ 4 cores
 ```
 
@@ -46,34 +69,85 @@ $ ./ttt-client        # initialize a client
 
 ## Server
 
-Centralizes all information about login, state of matches and players and the pontuation. If for some reason a player connection fails for some reason and the match was in its middle, if the player who disconnected gets back and the other player stays without playing with others then the match can be resumed.
+The server is responsible for centralizing all information regarding login, state of matches and players, as well as punctuation. If, for some reason, a player connection fails while the match was in its middle, and then the player who disconnected gets back and the other player stays online (not in `playing` state) then the match can be resumed (for such case we must implement some kind of 'cookie-a-like' system).
 
 It must:
--   support TCP and UDP connections
-  -   if TCP: user info and pswd encrypted
+-   support TCP (+ TLS) and UDP connections
 -   exchange data with client regarding:
   -   login
   -   logout
   -   heartbeat
-  -   state management
+  -   match state management
 -   manage the state of connected players
   -   UDP players are only allowed to talk with other UDP players. The same for TCP. It's server responsibility to manage this.
 -   keep a log file informing the events
+-   keep a database for persisting user info
+
+(ps: a client MUST NOT be capable of being logged at two clients at the same time).
 
 
 ## Client
 
-Conects to the server and from a list of connected players it can choose an adversary to play against.
+Connects to the server, registers if it hadn't done before, selects a user to play against (from the list of available users), invites the user for a match, starts the match.
 
--   connect through TCP or UDP with the server and other clients (for chatting purposes) - p2p
+It must be capable of:
+
+-   connecting through TCP or UDP with the server and other clients (for chatting purposes) - p2p
 -   exchange text messages directly with other players w/out passing through the server
--   talk with the server:
+-   talk with the server for:
   -   login
   -   heartbeat
   -   logout
   -   state management
 -   Encrypt user info and pwd
 
+
+## Structures
+
+```
+Server
+{
+  Connection* udp; // connection handler
+  Connection* tls; // connection handler
+
+  std::vector<Room> rooms_list;
+  std::vector<User> registered_users;
+}
+
+Room
+{
+  unsigned id;
+  Board board;
+  User userA; // X
+  User userB; // O
+}
+
+Board { char game_data[9]; }
+
+User
+{
+  unsigned id; // assigned on registration
+
+  char* login;
+  char* senha; // ps: shouldn't use plain text here
+               // optimally we'd use bcrypt or something
+               // like that
+
+  unsigned score;   // (victory ==> 2 points, draw ==> 1 point)
+
+  unsigned time_connected;
+
+  Connection* current_connection; // also gives info about conn_type
+  BOARD_MARK current_mark;        // O or X
+  UserStatus status;              // (online|playing|offline)
+}
+
+Database 
+{
+  std::string fname;
+  FILE* file;
+}
+```
 
 ## Protocol
 
@@ -83,10 +157,10 @@ Conects to the server and from a list of connected players it can choose an adve
 -   heartbeat
 -   direct message exchange
 -   list of players w/ the same transport protocol (and if they're busy or not)
--   invite a player for a match
--   request end of match
+-   match invite
+-   request end of match(?)
 -   inform where `X` or `O` was placed in the board
--   inform the Hall of Fame
+-   inform the Hall of Fame (in the server)
 
 ### Grammar
 
@@ -176,9 +250,8 @@ client:
 
 // TODO gather those replies specified above.
 
-`RPL_`
+`RPL_OK`
 
 ### LICENSE
 
 Mozilla Public License Version 2.0
-
