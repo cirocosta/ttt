@@ -6,6 +6,12 @@
 #define TTT_MAX_BUFSIZE 2048
 #define TTT_MAX_MESSAGE_SIZE 512
 
+#define TTT_BOARD_SIZE 9
+#define TTT_BOARD_DISPLAY_SIZE 9
+
+#define TTT_USER_LOGIN_SIZE 10
+#define TTT_USER_PWD_SIZE 10
+
 #include <map>
 
 namespace ttt
