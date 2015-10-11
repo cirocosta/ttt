@@ -14,6 +14,7 @@
 #define TTT_USER_PWD_SIZE 10
 
 #include <map>
+#include <cstring>
 
 namespace ttt
 {
@@ -44,6 +45,27 @@ typedef enum COMMAND {
   CMD_HB,
   CMD_UNDEFINED,
 } COMMAND;
+
+struct str_cmp {
+  bool operator()(char const* a, char const* b) const
+  {
+    return std::strcmp(a, b) < 0;
+  }
+};
+
+const static std::map<char const*, COMMAND, str_cmp> COMMAND_MAP = {
+  { "CMD_REG", CMD_REG },
+  { "CMD_IN", CMD_IN },
+  { "CMD_OUT", CMD_OUT },
+  { "CMD_HB", CMD_HB },
+};
+
+const static std::map<COMMAND, std::string> COMMAND_INV_MAP = {
+  {CMD_REG, "CMD_REG"},
+  {CMD_IN, "CMD_IN"},
+  {CMD_OUT, "CMD_OUT"},
+  {CMD_HB, "CMD_HB"},
+};
 
 
 }

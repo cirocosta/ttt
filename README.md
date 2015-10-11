@@ -187,31 +187,21 @@ crlf = "%x0D %x0A"              ; '\r\n'
 Commands are intended to be "named requests". Some of them are not intended to generate a reply. Replies are specified in [replies](#replies) section.
 
 
-#### REG
-
-```
-client:
-  CMD_REG:my_user_id:my_password:
-server:
-  RPL_OK:Registration Ok!:
-```
-
-> Request for registration
-
-
 #### IN
 
-> Login
+> Performs a Login if the `usr` and `pwd` matches. If `usr` doesn't exist, creates a new user, associates it with the given `pwd` and logs in. Otherwise (wrong pwd), error.
 
 ```
 client:
   CMD_IN:my_user_id:my_password:
-server:
+server: (OK)
   RPL_OK:Welcome!:
   RPL_LIST_START:Here comes the list of users:
   RPL_USER:user_id:type_of_conn:status:
   ...
   RPL_LIST_END:
+server: (ERROR)
+  RPL_INVALID_PWD:Invalid Password:
 ```
 
 The client connection wants to log into the server with a given user.

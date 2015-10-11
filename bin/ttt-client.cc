@@ -22,7 +22,7 @@ const static char* CLI_HELP =
     "\t-u\tUse UDP instead of TCP [optional]\n"
     "\n";
 
-void login()
+UserPtr login()
 {
   std::string login;
   std::string pwd;
@@ -32,12 +32,15 @@ void login()
        << "If you're not registered a new account will be created\n"
        << "\n";
 
-  cout << "User: ";
-  cin >> login;
-  cout <<  "\nPassword: ";
-  cin >> pwd;
-  
-  User user(login, pwd);
+  while (1) {
+    cout << "User: ";
+    cin >> login;
+    cout <<  "\nPassword: ";
+    cin >> pwd;
+
+  }
+
+  return UserPtr(new User(login, pwd));
 }
 
 int main(int argc, char* argv[])
@@ -58,6 +61,8 @@ int main(int argc, char* argv[])
 
   Client client (addr, useUdp);
   client.init();
+
+  UserPtr user = login();
 
   return 0;
 }
