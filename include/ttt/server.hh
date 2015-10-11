@@ -32,9 +32,8 @@ private:
 public:
   Server();
   ~Server();
-public:
-  void initUdpListener();   // one thread
-  void initTcpListener();   // another thread
+
+  void init();
 };
 };
 

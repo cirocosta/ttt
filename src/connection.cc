@@ -62,6 +62,17 @@ ssize_t Connection::read()
   return ::read(getSocket(), p_buf, TTT_MAX_BUFSIZE);
 }
 
+ssize_t Connection::recvfrom()
+{
+  struct sockaddr cliaddr;
+  int n;
+  socklen_t len;
+
+  memset(p_buf, '\0', TTT_MAX_BUFSIZE);
+
+  return ::recvfrom(getSocket(), p_buf, TTT_MAX_BUFSIZE, 0, &cliaddr, &len);
+}
+
 void Connection::connect()
 {
   struct addrinfo* original_addr = _getAddr(m_hostname, m_port);

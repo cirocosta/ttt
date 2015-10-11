@@ -54,6 +54,7 @@ public:
 
   ssize_t write(const std::string& content) const;
   ssize_t read();
+  ssize_t recvfrom();
 
   void connect();               //  client
   ConnectionPtr accept() const; //  server

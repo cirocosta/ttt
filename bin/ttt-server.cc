@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 {
   Server server;
 
-  server.initTcpListener();
+  server.init();
 
   return 0;
 }

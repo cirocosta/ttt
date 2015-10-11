@@ -7,10 +7,10 @@ Server::Server() {}
 
 Server::~Server() {}
 
+#if 0
 void Server::initUdpListener()
 {
   net::Connection conn{ "localhost", TTT_DEFAULT_PORT, net::UDP_PASSIVE };
-  net::ConnectionPtr client_conn;
   char buf[1024] = { 0 };
   int n;
   socklen_t len;
@@ -25,20 +25,26 @@ void Server::initUdpListener()
     sendto(conn.getSocket(), buf, 1024, 0, &cliaddr, len);
   }
 }
+#endif
 
-void Server::initTcpListener()
+void Server::init()
 {
   struct epoll_event event;
 
-  net::Connection conn{ "localhost", TTT_DEFAULT_PORT, net::TCP_PASSIVE };
-  net::ConnectionPtr client_conn;
+  net::Connection udp{ "localhost", TTT_DEFAULT_PORT, net::UDP_PASSIVE };
+  net::Connection tcp{ "localhost", TTT_DEFAULT_PORT, net::TCP_PASSIVE };
+  net::ConnectionPtr tcp_client;
 
-  conn.listen();
-  conn.makeNonBlocking();
+  udp.listen();
+  udp.makeNonBlocking();
 
-  epoll.add(conn.getSocket(), EPOLLIN | EPOLLET);
+  tcp.listen();
+  tcp.makeNonBlocking();
 
-  std::cout << "Server at " << conn.getHostname() << ":" << conn.getPort()
+  epoll.add(tcp.getSocket(), EPOLLIN | EPOLLET);
+  epoll.add(udp.getSocket(), EPOLLIN | EPOLLET);
+
+  std::cout << "Server at " << tcp.getHostname() << ":" << tcp.getPort()
             << " waiting for clients" << std::endl;
 
   while (1) {
@@ -55,15 +61,15 @@ void Server::initTcpListener()
       }
 
       // incomming
-      else if (epoll.events[i].data.fd == conn.getSocket()) {
+      else if (epoll.events[i].data.fd == tcp.getSocket()) {
         LOGERR("new connection!");
 
         // FIXME if set to nonblocking, inside the accept method
         //       we should also check if errno == EAGAIN or EWOULDBLOCK
-        client_conn = conn.accept();
-        client_conn->makeNonBlocking();
+        tcp_client = tcp.accept();
+        tcp_client->makeNonBlocking();
 
-        epoll.add(client_conn->getSocket(), EPOLLIN | EPOLLET);
+        epoll.add(tcp_client->getSocket(), EPOLLIN | EPOLLET);
         continue;
       }
 
