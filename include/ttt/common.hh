@@ -4,6 +4,7 @@
 #include "ttt/constants.hh"
 
 #include <cstdio>
+#include <cstdint>
 #include <stdexcept>
 #include <cstdlib>
 #include <cstring>
