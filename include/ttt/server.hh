@@ -4,7 +4,7 @@
 #include "ttt/connection.hh"
 #include "ttt/tls_connection.hh"
 
-#include <sys/epoll.h>
+#include "ttt/EPoll.hh"
 #include <map>
 
 /**
@@ -27,12 +27,12 @@ private:
   ConnectionPtr m_udp_conn;
   std::map<int, ConnectionPtr> m_tcp_children;
 
-  struct epoll_event* m_tcp_conn_events;
+  EPoll epoll;
 
 public:
   Server();
   ~Server();
-private:
+public:
   void initUdpListener();   // one thread
   void initTcpListener();   // another thread
 };

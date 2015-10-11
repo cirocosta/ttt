@@ -1,4 +1,3 @@
-
 #include "ttt/server.hh"
 #include <iostream>
 
@@ -32,7 +31,9 @@ void tls_connection()
 // TEST ONLY
 int main(int argc, char *argv[])
 {
-  /* tls_connection(); */
+  Server server;
+
+  server.initTcpListener();
 
   return 0;
 }
