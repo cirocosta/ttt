@@ -13,7 +13,26 @@ Client::Client(const std::string& addr, bool isudp)
                                               net::TCP_ACTIVE));
 }
 
-void Client::init() { conn->connect(); }
+void Client::init()
+{
+  struct epoll_event event;
+
+  conn->connect();
+
+  epoll.add(STDIN_FILENO, EPOLLIN | EPOLLET);
+  epoll.add(conn->getSocket(), EPOLLIN | EPOLLET);
+
+  cmd_login();
+
+  while (1) {
+    int n, i;
+    
+    n = epoll.wait();
+    for (i = 0; i < n; i++) {
+      LOGERR("Data in fd `%d`", epoll.events[i].data.fd);
+    }
+  }
+}
 
 void Client::sendMsg(COMMAND cmd, std::initializer_list<std::string> args)
 {
@@ -58,6 +77,7 @@ void Client::cmd_login()
       return;
     }
   }
+  LOGERR("wuttt?");
 }
 
 }; // !ns ttt

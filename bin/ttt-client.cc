@@ -43,17 +43,3 @@ int main(int argc, char* argv[])
 
   return 0;
 }
-
-#if 0
-void tls_connection()
-{
-  net::TLSConnection conn{ "localhost", TTT_DEFAULT_PORT, net::TLS_ACTIVE };
-
-  conn.connect();
-  LOGERR("Connection Established!");
-
-  for (std::string line; std::getline(std::cin, line);) {
-    conn.write(line);
-  }
-}
-#endif

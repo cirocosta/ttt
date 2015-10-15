@@ -19,6 +19,7 @@ Server::~Server() {}
 void Server::init()
 {
   struct epoll_event event;
+  uint64_t enqueued_hb;
 
   ConnectionPtr conn;
   Connection* tmp_conn;
@@ -27,9 +28,11 @@ void Server::init()
   m_udp_conn->makeNonBlocking();
   m_tcp_conn->listen();
   m_tcp_conn->makeNonBlocking();
+  m_heartbeat_fd = utils::schedule_repeating(2);
 
   epoll.add(m_tcp_conn->getSocket(), EPOLLIN | EPOLLET);
   epoll.add(m_udp_conn->getSocket(), EPOLLIN | EPOLLET);
+  epoll.add(m_heartbeat_fd, EPOLLIN | EPOLLET);
 
   m_connections[m_udp_conn->getSocket()] = std::move(m_udp_conn);
 
@@ -62,6 +65,11 @@ void Server::init()
         m_connections[conn->getSocket()] = std::move(conn);
 
         continue;
+      }
+
+      else if (epoll.events[i].data.fd == m_heartbeat_fd) {
+        LOGERR("HEARTBEAT");
+        ::read(m_heartbeat_fd, &enqueued_hb, 8);
       }
 
       // data on a fd waiting to be read
@@ -110,8 +118,9 @@ void Server::cmd_login(Connection* conn, const std::string& login,
       break;
     }
 
-    conn->write(Message::str(RPL_OK, { std::to_string(user.second->id),
-                                       std::to_string(user.second->score) }));
+    conn->write(
+        Message::str(RPL_WELCOME, { std::to_string(user.second->id),
+                                    std::to_string(user.second->score) }));
     return;
   }
 
@@ -120,7 +129,7 @@ void Server::cmd_login(Connection* conn, const std::string& login,
       m_users.emplace(new_id, std::make_shared<User>(login, pwd)).first->second;
 
   new_user->id = new_id;
-  conn->write(
-      Message::str(RPL_OK, { "Welcome!", std::to_string(new_user->id) }));
+  conn->write(Message::str(RPL_WELCOME, { std::to_string(new_user->id),
+                                          std::to_string(new_user->score) }));
 }
 };

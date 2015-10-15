@@ -6,6 +6,7 @@
 #include "ttt/EPoll.hh"
 #include "ttt/protocol/parser.hh"
 #include "ttt/user.hh"
+#include "ttt/timer.hh"
 
 #include <map>
 
@@ -27,6 +28,7 @@ class Server
 private:
   ConnectionPtr m_tcp_conn;
   ConnectionPtr m_udp_conn;
+  int m_heartbeat_fd;
 
   std::map<int, ConnectionPtr> m_connections;
   std::map<unsigned, UserPtr> m_users;

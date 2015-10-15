@@ -4,6 +4,7 @@
 #include "ttt/tls_connection.hh"
 #include "ttt/protocol/msg.hh"
 #include "ttt/user.hh"
+#include "ttt/EPoll.hh"
 
 #include <initializer_list>
 
@@ -30,6 +31,7 @@ struct Client {
   std::string server_addr;
   bool isUdp;
   UserPtr user;
+  EPoll epoll;
 
   ConnectionPtr conn;
 
