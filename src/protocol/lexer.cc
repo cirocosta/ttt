@@ -61,9 +61,13 @@ bool Lexer::arg(Buffer& buf)
   char const* peek;
   char const* tmp_peek;
 
+  if (buf.la && buf.la+1) {
+    if (*buf.la == '\r' && *(buf.la+1) == '\n')
+      return false;
+  }
+
   if (!(tmp_peek = _is_any_except(buf.la, "\0:", 2)))
     return false;
-
 
   while ((tmp_peek = _is_any_except(tmp_peek, "\0:", 2)))
     peek = tmp_peek;

@@ -99,5 +99,8 @@ TEST(Lexer, Arg)
   ASSERT_EQ(0, strcmp(buf.token.buf, "Registration Ok!"));
 
   ASSERT_TRUE(Lexer::colon(buf));
+  ASSERT_FALSE(Lexer::arg(buf));
+
   ASSERT_TRUE(Lexer::terminal(buf, STR_CRLF.c_str(), STR_CRLF.size()));
 }
+

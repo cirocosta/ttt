@@ -10,9 +10,9 @@ namespace ttt
 namespace protocol
 {
 
-
 struct Parser {
   static Message parse_msg(std::string msg);
+  /* static const char* parse(char const* msg, Message* message); */
 };
 }
 };

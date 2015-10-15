@@ -30,6 +30,11 @@ struct AddressInfo {
   }
 };
 
+struct SockAddr {
+  struct sockaddr addr;
+  socklen_t len;
+};
+
 class Connection;
 typedef std::unique_ptr<Connection> ConnectionPtr;
 
@@ -43,6 +48,7 @@ private:
   bool m_passive;
   int m_socktype;
   AddressInfo m_addrinfo;
+  SockAddr m_last_cliaddr;
 
 protected:
   char p_buf[TTT_MAX_BUFSIZE];
@@ -54,7 +60,6 @@ public:
 
   ssize_t write(const std::string& content) const;
   ssize_t read();
-  ssize_t recvfrom();
 
   void connect();               //  client
   ConnectionPtr accept() const; //  server
@@ -62,8 +67,8 @@ public:
 
   void makeNonBlocking();
 
-  inline bool isUDP() { return m_socktype == SOCK_DGRAM; }
-  inline bool isPassive() { return m_passive; }
+  inline bool isUDP() const { return m_socktype == SOCK_DGRAM; }
+  inline bool isPassive() const { return m_passive; }
 
   inline const std::string getHostname() const { return m_hostname; }
   inline const uint16_t getPort() const { return m_port; }

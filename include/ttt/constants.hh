@@ -44,6 +44,7 @@ typedef enum COMMAND {
   CMD_OUT,
   CMD_HB,
   CMD_UNDEFINED,
+  RPL_OK
 } COMMAND;
 
 struct str_cmp {
@@ -58,16 +59,16 @@ const static std::map<char const*, COMMAND, str_cmp> COMMAND_MAP = {
   { "CMD_IN", CMD_IN },
   { "CMD_OUT", CMD_OUT },
   { "CMD_HB", CMD_HB },
+  { "RPL_OK", RPL_OK },
 };
 
 const static std::map<COMMAND, std::string> COMMAND_INV_MAP = {
-  {CMD_REG, "CMD_REG"},
-  {CMD_IN, "CMD_IN"},
-  {CMD_OUT, "CMD_OUT"},
-  {CMD_HB, "CMD_HB"},
+  { CMD_REG, "CMD_REG" },
+  { CMD_IN, "CMD_IN" },
+  { CMD_OUT, "CMD_OUT" },
+  { CMD_HB, "CMD_HB" },
+  { RPL_OK, "RPL_OK" },
 };
-
-
 }
 
 }; // ! ns ttt

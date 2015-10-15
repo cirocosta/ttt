@@ -6,6 +6,7 @@
 #include <string>
 #include <algorithm>
 #include <functional>
+#include <initializer_list>
 
 namespace ttt
 {
@@ -21,6 +22,13 @@ struct Message {
     return std::accumulate(
         args.begin(), args.end(), COMMAND_INV_MAP.find(command)->second + ':',
         [](const std::string& a, const std::string& b) { return a + b + ':'; });
+  }
+
+  inline static std::string str(COMMAND cmd,
+                                std::initializer_list<std::string> args)
+  {
+    return Message{.command = cmd,
+                   .args = std::vector<std::string>(args) }.toString();
   }
 };
 }

@@ -13,14 +13,15 @@ struct Token {
   char buf[TTT_MAX_MESSAGE_SIZE];
   unsigned len;
 
-  Token () {
+  Token()
+  {
     memset(buf, '\0', TTT_MAX_MESSAGE_SIZE);
     len = 0;
   }
 };
 
 struct Buffer {
-  char const* la;  // curr post
+  char const* la;  // curr pos
   const char* buf; // initial
   unsigned column; // pos in line
   unsigned line;   // line in line

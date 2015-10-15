@@ -50,8 +50,16 @@ Connection::~Connection()
 ssize_t Connection::write(const std::string& content) const
 {
   int n;
-  PASSERT(~(n = ::write(m_sockfd, content.c_str(), content.length())),
-          "write error");
+
+  if (!isUDP()) {
+    PASSERT(~(n = ::write(m_sockfd, content.c_str(), content.length())),
+            "write error");
+    return n;
+  }
+
+  PASSERT(~(n = ::sendto(getSocket(), content.c_str(), content.length(), 0,
+                         &m_last_cliaddr.addr, m_last_cliaddr.len)),
+          "sendto error");
 
   return n;
 }
@@ -59,18 +67,13 @@ ssize_t Connection::write(const std::string& content) const
 ssize_t Connection::read()
 {
   memset(p_buf, '\0', TTT_MAX_BUFSIZE);
+
+  if (isUDP()) {
+    return ::recvfrom(getSocket(), p_buf, TTT_MAX_BUFSIZE, 0,
+                      &m_last_cliaddr.addr, &m_last_cliaddr.len);
+  }
+
   return ::read(getSocket(), p_buf, TTT_MAX_BUFSIZE);
-}
-
-ssize_t Connection::recvfrom()
-{
-  struct sockaddr cliaddr;
-  int n;
-  socklen_t len;
-
-  memset(p_buf, '\0', TTT_MAX_BUFSIZE);
-
-  return ::recvfrom(getSocket(), p_buf, TTT_MAX_BUFSIZE, 0, &cliaddr, &len);
 }
 
 void Connection::connect()

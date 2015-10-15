@@ -15,10 +15,21 @@ Client::Client(const std::string& addr, bool isudp)
 void Client::init()
 {
   conn->connect();
+}
 
-  for (std::string line; std::getline(std::cin, line);) {
-    conn->write(line);
-  }
+void Client::sendMsg(COMMAND cmd, std::initializer_list<std::string> args)
+{
+  conn->write(Message{.command = cmd,
+                      .args = std::vector<std::string>(args) }.toString());
+}
+
+Message Client::waitMsg()
+{
+  Message message {.command = CMD_IN, .args = std::vector<std::string>()};
+  conn->read();
+  LOGERR("Just read: %s", conn->getBuffer());
+
+  return message;
 }
 
 }; // !ns ttt

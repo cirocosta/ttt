@@ -44,5 +44,22 @@ Message Parser::parse_msg(std::string msg)
 
   return Message{.command = cmd, .args = args };
 }
+
+
+#if 0
+const char* Parser::parse(char const* msg, Message* message)
+{
+  Buffer buf(msg);
+
+  COMMAND cmd = _CMD(buf);
+  std::vector<std::string> args = _ARGS(buf);
+  Lexer::terminal(buf, STR_CRLF.c_str(), STR_CRLF.size());
+
+  *message = Message{.command = cmd, .args = args };
+  
+  return buf.la;
+}
+#endif
+
 }
 }

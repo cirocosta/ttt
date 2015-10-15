@@ -3,14 +3,23 @@
 namespace ttt
 {
 
-Server::Server() {}
+using namespace net;
+using namespace protocol;
+
+Server::Server()
+{
+  m_tcp_conn = ConnectionPtr(
+      new Connection{ "localhost", TTT_DEFAULT_PORT, TCP_PASSIVE });
+  m_udp_conn = ConnectionPtr(
+      new Connection{ "localhost", TTT_DEFAULT_PORT, UDP_PASSIVE });
+}
 
 Server::~Server() {}
 
 #if 0
 void Server::initUdpListener()
 {
-  net::Connection conn{ "localhost", TTT_DEFAULT_PORT, net::UDP_PASSIVE };
+  Connection conn{ "localhost", TTT_DEFAULT_PORT, UDP_PASSIVE };
   char buf[1024] = { 0 };
   int n;
   socklen_t len;
@@ -31,21 +40,21 @@ void Server::init()
 {
   struct epoll_event event;
 
-  net::Connection udp{ "localhost", TTT_DEFAULT_PORT, net::UDP_PASSIVE };
-  net::Connection tcp{ "localhost", TTT_DEFAULT_PORT, net::TCP_PASSIVE };
-  net::ConnectionPtr tcp_client;
+  ConnectionPtr conn;
+  Connection* tmp_conn;
 
-  udp.listen();
-  udp.makeNonBlocking();
+  m_udp_conn->listen();
+  m_udp_conn->makeNonBlocking();
+  m_tcp_conn->listen();
+  m_tcp_conn->makeNonBlocking();
 
-  tcp.listen();
-  tcp.makeNonBlocking();
+  epoll.add(m_tcp_conn->getSocket(), EPOLLIN | EPOLLET);
+  epoll.add(m_udp_conn->getSocket(), EPOLLIN | EPOLLET);
 
-  epoll.add(tcp.getSocket(), EPOLLIN | EPOLLET);
-  epoll.add(udp.getSocket(), EPOLLIN | EPOLLET);
+  m_connections[m_udp_conn->getSocket()] = std::move(m_udp_conn);
 
-  std::cout << "Server at " << tcp.getHostname() << ":" << tcp.getPort()
-            << " waiting for clients" << std::endl;
+  std::cout << "Server at " << m_tcp_conn->getHostname() << ":"
+            << m_tcp_conn->getPort() << " waiting for clients" << std::endl;
 
   while (1) {
     int n, i;
@@ -61,23 +70,38 @@ void Server::init()
       }
 
       // incomming
-      else if (epoll.events[i].data.fd == tcp.getSocket()) {
+      else if (epoll.events[i].data.fd == m_tcp_conn->getSocket()) {
         LOGERR("new connection!");
 
         // FIXME if set to nonblocking, inside the accept method
         //       we should also check if errno == EAGAIN or EWOULDBLOCK
-        tcp_client = tcp.accept();
-        tcp_client->makeNonBlocking();
+        conn = m_tcp_conn->accept();
+        conn->makeNonBlocking();
 
-        epoll.add(tcp_client->getSocket(), EPOLLIN | EPOLLET);
+        epoll.add(conn->getSocket(), EPOLLIN | EPOLLET);
+        m_connections[conn->getSocket()] = std::move(conn);
+
         continue;
       }
 
       // data on a fd waiting to be read
       else {
-        LOGERR("data to read!");
+        tmp_conn = m_connections[epoll.events[i].data.fd].get();
+        tmp_conn->read();
+        respond(tmp_conn);
       }
     }
   }
+}
+
+void Server::respond(Connection* conn)
+{
+  Message msg = Parser::parse_msg(std::string(conn->getBuffer()));
+
+  if (msg.command != CMD_IN) {
+    return;
+  }
+
+  conn->write(Message::str(RPL_OK, { "Welcome!" }));
 }
 };

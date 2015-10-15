@@ -4,6 +4,13 @@
 #include <sys/epoll.h>
 #include "ttt/constants.hh"
 #include "ttt/common.hh"
+#include "ttt/connection.hh"
+
+namespace ttt
+{
+
+namespace net
+{
 
 struct EPoll {
   struct epoll_event* events;
@@ -32,7 +39,7 @@ struct EPoll {
 
   void add(int fd, uint32_t flags)
   {
-    struct epoll_event ev = {0};
+    struct epoll_event ev = { 0 };
 
     ev.data.fd = fd;
     ev.events = flags;
@@ -40,5 +47,8 @@ struct EPoll {
     PASSERT(~(epoll_ctl(efd, EPOLL_CTL_ADD, fd, &ev)), "epoll_ctl");
   }
 };
+
+} // ! ns net
+} // ! ns ttt
 
 #endif

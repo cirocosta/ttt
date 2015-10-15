@@ -4,6 +4,8 @@
 #include <string>
 #include <memory>
 
+#include "ttt/connection.hh"
+
 namespace ttt {
 
 struct User;

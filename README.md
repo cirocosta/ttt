@@ -107,8 +107,9 @@ It must be capable of:
 ```
 Server
 {
-  Connection* udp; // connection handler
-  Connection* tls; // connection handler
+  ConnectionPtr udp; // connection handler
+  ConnectionPtr tls; // connection handler
+  std::map<int, ConnectionPtr> m_connections;
 
   std::vector<Room> rooms_list;
   std::vector<User> registered_users;
@@ -122,7 +123,10 @@ Room
   User userB; // O
 }
 
-Board { char game_data[9]; }
+Board 
+{ 
+  char game_data[9]; 
+}
 
 User
 {
@@ -205,6 +209,7 @@ server: (ERROR)
 ```
 
 The client connection wants to log into the server with a given user.
+
 
 #### OUT
 
