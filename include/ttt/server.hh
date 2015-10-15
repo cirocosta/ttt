@@ -8,7 +8,6 @@
 #include "ttt/user.hh"
 
 #include <map>
-#include <vector>
 
 /**
  * - table of registered users
@@ -30,18 +29,21 @@ private:
   ConnectionPtr m_udp_conn;
 
   std::map<int, ConnectionPtr> m_connections;
-  std::map<long, protocol::Message> m_messages;
-
-  std::vector<UserPtr> m_users;
+  std::map<unsigned, UserPtr> m_users;
 
   EPoll epoll;
+  unsigned m_uid_count;
 
 public:
   Server();
   ~Server();
 
+  inline unsigned generateUID() { return m_uid_count++; }
+
   void init();
   void respond(Connection* conn);
+
+  void cmd_login(Connection* conn, const std::string&, const std::string&);
 };
 };
 

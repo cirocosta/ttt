@@ -6,7 +6,7 @@ namespace ttt
 using namespace net;
 using namespace protocol;
 
-Server::Server()
+Server::Server() : m_uid_count(0)
 {
   m_tcp_conn = ConnectionPtr(
       new Connection{ "localhost", TTT_DEFAULT_PORT, TCP_PASSIVE });
@@ -96,12 +96,45 @@ void Server::init()
 
 void Server::respond(Connection* conn)
 {
-  Message msg = Parser::parse_msg(std::string(conn->getBuffer()));
+  const std::string src (conn->getBuffer());
 
-  if (msg.command != CMD_IN) {
+  if (src.empty()) {
+    LOGERR("empty buffer received");
     return;
   }
 
-  conn->write(Message::str(RPL_OK, { "Welcome!" }));
+  Message msg = Parser::parse_msg(std::string(conn->getBuffer()));
+
+  switch (msg.command) {
+    case CMD_IN:
+      cmd_login(conn, msg.args[0], msg.args[1]);
+      break;
+    default:
+      conn->write(Message::str(RPL_ERR, { "Unrecognized Command" }));
+  }
+}
+
+void Server::cmd_login(Connection* conn, const std::string& login,
+                       const std::string& pwd)
+{
+  for (const auto user : m_users) {
+    if (user.second->login != login)
+      continue;
+    if (user.second->pwd != pwd) {
+      conn->write(Message::str(RPL_ERR, { "Wrong Password" }));
+      break;
+    }
+
+    conn->write(Message::str(RPL_OK, { "Welcome Back!" }));
+    return;
+  }
+
+  unsigned new_id = generateUID();
+  const auto new_user_pos =
+      m_users.emplace(new_id, std::make_shared<User>(login, pwd));
+
+  new_user_pos.first->second->id = new_id;
+  conn->write(Message::str(
+      RPL_OK, { "Welcome!", std::to_string(new_user_pos.first->second->id) }));
 }
 };

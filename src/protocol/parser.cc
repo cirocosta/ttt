@@ -34,7 +34,7 @@ std::vector<std::string> _ARGS(Buffer& buf)
   return args;
 }
 
-Message Parser::parse_msg(std::string msg)
+Message Parser::parse_msg(const std::string& msg)
 {
   Buffer buf(msg);
 
