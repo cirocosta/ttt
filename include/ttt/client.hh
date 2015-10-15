@@ -35,7 +35,7 @@ struct Client {
 
   void init();
   void sendMsg(COMMAND cmd, std::initializer_list<std::string> args);
-  Message waitMsg();
+  std::vector<Message> waitMsgs();
 };
 
 }; // !ns ttt

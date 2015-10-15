@@ -1,4 +1,5 @@
 #include "ttt/client.hh"
+#include "ttt/protocol/parser.hh"
 
 namespace ttt
 {
@@ -19,17 +20,16 @@ void Client::init()
 
 void Client::sendMsg(COMMAND cmd, std::initializer_list<std::string> args)
 {
-  conn->write(Message{.command = cmd,
-                      .args = std::vector<std::string>(args) }.toString());
+  conn->write(Message::str(cmd,args));
 }
 
-Message Client::waitMsg()
+std::vector<Message> Client::waitMsgs()
 {
-  Message message {.command = CMD_IN, .args = std::vector<std::string>()};
   conn->read();
-  LOGERR("Just read: %s", conn->getBuffer());
+  LOGERR("buf: `%s`", conn->getBuffer());
+  std::vector<Message> msgs = Parser::parse_msgs(std::string(conn->getBuffer()));
 
-  return message;
+  return msgs;
 }
 
 }; // !ns ttt

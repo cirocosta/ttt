@@ -81,7 +81,7 @@ TEST(Lexer, Repl)
   std::string msg = "RPL_OK:Registration Ok!\r\n";
   Buffer buf(msg);
 
-  ASSERT_TRUE(Lexer::reply(buf));
+  ASSERT_TRUE(Lexer::command(buf));
   ASSERT_EQ(0, strcmp(buf.token.buf, "RPL_OK"));
 }
 

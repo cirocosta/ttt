@@ -36,12 +36,20 @@ UserPtr login(Client& client)
   while (1) {
     cout << "User: ";
     cin >> login;
-    cout <<  "\nPassword: ";
+    cout << "\nPassword: ";
     cin >> pwd;
 
-    // something like that ... 
-    client.sendMsg(CMD_IN, {login, pwd});
-    Message msg = client.waitMsg();
+    // something like that ...
+    client.sendMsg(CMD_IN, { login, pwd });
+    std::vector<Message> msgs = client.waitMsgs();
+
+    // should actually return:
+    //  RPL_OK
+    //  RPL_ ... the state of the user in the database
+    if (msgs[0].command == RPL_OK) {
+      LOGERR("Logged!");
+      break;
+    }
   }
 
   return UserPtr(new User(login, pwd));
@@ -53,8 +61,7 @@ int main(int argc, char* argv[])
 
   if (argc < 2) {
     std::cout << CLI_HELP << std::endl
-              << "Error: at least <address> must be specified"
-              << std::endl;
+              << "Error: at least <address> must be specified" << std::endl;
     exit(EXIT_FAILURE);
   }
 
@@ -63,13 +70,12 @@ int main(int argc, char* argv[])
   if (argc == 3 && !strcmp(argv[2], "-u"))
     useUdp = true;
 
-  Client client (addr, useUdp);
+  Client client(addr, useUdp);
   client.init();
   UserPtr user = login(client);
 
   return 0;
 }
-
 
 #if 0
 void tls_connection()

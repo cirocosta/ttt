@@ -61,8 +61,8 @@ bool Lexer::arg(Buffer& buf)
   char const* peek;
   char const* tmp_peek;
 
-  if (buf.la && buf.la+1) {
-    if (*buf.la == '\r' && *(buf.la+1) == '\n')
+  if (buf.la && buf.la + 1) {
+    if (*buf.la == '\r' && *(buf.la + 1) == '\n')
       return false;
   }
 
@@ -81,21 +81,8 @@ bool Lexer::command(Buffer& buf)
 {
   char const* peek;
 
-  if (!(peek = _is_terminal(buf.la, STR_CMD.c_str(), STR_CMD.size())))
-    return false;
-
-  while (peek && isalpha(*peek))
-    peek++;
-  buf.update(peek);
-
-  return true;
-}
-
-bool Lexer::reply(Buffer& buf)
-{
-  char const* peek;
-
-  if (!(peek = _is_terminal(buf.la, STR_RPL.c_str(), STR_RPL.size())))
+  if (!((peek = _is_terminal(buf.la, STR_CMD.c_str(), STR_CMD.size())) ||
+        (peek = _is_terminal(buf.la, STR_RPL.c_str(), STR_RPL.size()))))
     return false;
 
   while (peek && isalpha(*peek))

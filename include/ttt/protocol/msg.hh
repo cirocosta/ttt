@@ -17,18 +17,21 @@ struct Message {
   COMMAND command;
   std::vector<std::string> args;
 
+  Message(COMMAND c, std::vector<std::string> a) : command(c), args(a) {}
+
   std::string toString() const
   {
-    return std::accumulate(
+    std::string str = std::accumulate(
         args.begin(), args.end(), COMMAND_INV_MAP.find(command)->second + ':',
         [](const std::string& a, const std::string& b) { return a + b + ':'; });
+
+    return str + "\r\n";
   }
 
   inline static std::string str(COMMAND cmd,
                                 std::initializer_list<std::string> args)
   {
-    return Message{.command = cmd,
-                   .args = std::vector<std::string>(args) }.toString();
+    return Message{ cmd, std::vector<std::string>(args) }.toString();
   }
 };
 }

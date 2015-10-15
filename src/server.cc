@@ -16,26 +16,6 @@ Server::Server() : m_uid_count(0)
 
 Server::~Server() {}
 
-#if 0
-void Server::initUdpListener()
-{
-  Connection conn{ "localhost", TTT_DEFAULT_PORT, UDP_PASSIVE };
-  char buf[1024] = { 0 };
-  int n;
-  socklen_t len;
-  struct sockaddr cliaddr;
-
-  conn.listen();
-  /* conn.makeNonBlocking(); */
-
-  while (1) {
-    n = recvfrom(conn.getSocket(), buf, 1024, 0, &cliaddr, &len);
-    LOGERR("SERVER\t received: %s", buf);
-    sendto(conn.getSocket(), buf, 1024, 0, &cliaddr, len);
-  }
-}
-#endif
-
 void Server::init()
 {
   struct epoll_event event;
@@ -96,7 +76,7 @@ void Server::init()
 
 void Server::respond(Connection* conn)
 {
-  const std::string src (conn->getBuffer());
+  const std::string src(conn->getBuffer());
 
   if (src.empty()) {
     LOGERR("empty buffer received");
@@ -122,6 +102,11 @@ void Server::cmd_login(Connection* conn, const std::string& login,
       continue;
     if (user.second->pwd != pwd) {
       conn->write(Message::str(RPL_ERR, { "Wrong Password" }));
+      break;
+    }
+
+    if (user.second->active) {
+      conn->write(Message::str(RPL_ERR, { "User already logged in" }));
       break;
     }
 

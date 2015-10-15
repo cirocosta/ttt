@@ -8,10 +8,10 @@ TEST(Msg, ToString)
 {
   Message msg{ CMD_REG, std::vector<std::string>{ "ciro", "costa" } };
 
-  ASSERT_EQ("CMD_REG:ciro:costa:", msg.toString());
+  ASSERT_EQ("CMD_REG:ciro:costa:\r\n", msg.toString());
 }
 
 TEST(Msg, str)
 {
-  ASSERT_EQ("CMD_REG:ciro:costa:", Message::str(CMD_REG, { "ciro", "costa" }));
+  ASSERT_EQ("CMD_REG:ciro:costa:\r\n", Message::str(CMD_REG, { "ciro", "costa" }));
 }

@@ -21,6 +21,8 @@ struct User
   unsigned uptime;
   unsigned id; 
 
+  bool active;
+
   User (const std::string& l, const std::string& pwd);
 };
 
