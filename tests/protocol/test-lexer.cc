@@ -104,3 +104,20 @@ TEST(Lexer, Arg)
   ASSERT_TRUE(Lexer::terminal(buf, STR_CRLF.c_str(), STR_CRLF.size()));
 }
 
+
+TEST(Lexer, ArgSingleDigit)
+{
+  std::string msg = "RPL_OK:a:\r\n";
+  std::vector<std::string> args;
+
+  Buffer buf(msg);
+
+  while (Lexer::arg(buf)) {
+    Lexer::terminal(buf, ":", 1);
+    args.emplace_back(buf.token.buf);
+  }
+
+  ASSERT_TRUE(Lexer::terminal(buf, STR_CRLF.c_str(), STR_CRLF.size()));
+  ASSERT_EQ(2, args.size());
+}
+

@@ -101,25 +101,26 @@ void Server::cmd_login(Connection* conn, const std::string& login,
     if (user.second->login != login)
       continue;
     if (user.second->pwd != pwd) {
-      conn->write(Message::str(RPL_ERR, { "Wrong Password" }));
+      conn->write(Message::str(RPL_INPWD, { "Wrong Password" }));
       break;
     }
 
     if (user.second->active) {
-      conn->write(Message::str(RPL_ERR, { "User already logged in" }));
+      conn->write(Message::str(RPL_ALOGGED, { "User already logged in" }));
       break;
     }
 
-    conn->write(Message::str(RPL_OK, { "Welcome Back!" }));
+    conn->write(Message::str(RPL_OK, { std::to_string(user.second->id),
+                                       std::to_string(user.second->score) }));
     return;
   }
 
   unsigned new_id = generateUID();
-  const auto new_user_pos =
-      m_users.emplace(new_id, std::make_shared<User>(login, pwd));
+  const auto new_user =
+      m_users.emplace(new_id, std::make_shared<User>(login, pwd)).first->second;
 
-  new_user_pos.first->second->id = new_id;
-  conn->write(Message::str(
-      RPL_OK, { "Welcome!", std::to_string(new_user_pos.first->second->id) }));
+  new_user->id = new_id;
+  conn->write(
+      Message::str(RPL_OK, { "Welcome!", std::to_string(new_user->id) }));
 }
 };

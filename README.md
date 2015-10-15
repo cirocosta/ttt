@@ -199,13 +199,10 @@ Commands are intended to be "named requests". Some of them are not intended to g
 client:
   CMD_IN:my_user_id:my_password:
 server: (OK)
-  RPL_OK:Welcome!:
-  RPL_LIST_START:Here comes the list of users:
-  RPL_USER:user_id:type_of_conn:status:
-  ...
-  RPL_LIST_END:
+  RPL_WELCOME:id:score:
 server: (ERROR)
-  RPL_INVALID_PWD:Invalid Password:
+  RPL_INPWD:Invalid Password:
+  RPL_ALOGGED:Already Logged:
 ```
 
 The client connection wants to log into the server with a given user.
@@ -218,7 +215,7 @@ The client connection wants to log into the server with a given user.
 client:
   CMD_OUT:
 server:
-  RPL_OK:You've been logged out. Closing connection:
+  RPL_BYE:You've been logged out. Closing connection:
 ```
 
 #### HB

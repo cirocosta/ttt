@@ -66,8 +66,11 @@ bool Lexer::arg(Buffer& buf)
       return false;
   }
 
-  if (!(tmp_peek = _is_any_except(buf.la, "\0:", 2)))
+  if (!(tmp_peek = _is_any_except(buf.la, "\0:", 2))) {
     return false;
+  } else {
+    peek = tmp_peek;
+  }
 
   while ((tmp_peek = _is_any_except(tmp_peek, "\0:", 2)))
     peek = tmp_peek;

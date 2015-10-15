@@ -53,7 +53,6 @@ std::vector<Message> Parser::parse_msgs(const std::string& src)
 
   while (buf.la && *buf.la != '\0') {
     COMMAND cmd = _CMD(buf);
-    // FIXME error here!
     std::vector<std::string> args = _ARGS(buf);
     Lexer::terminal(buf, STR_CRLF.c_str(), STR_CRLF.size());
 

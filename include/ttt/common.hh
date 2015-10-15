@@ -42,6 +42,25 @@
     }                                                                          \
   } while (0)
 
+namespace ttt
+{
+namespace utils
+{
+
+static unsigned long to_ul(const std::string& str)
+{
+  char* end;
+  unsigned long ul = std::strtoul(str.c_str(), &end, 10);
+
+  PASSERT(str.c_str() != end, "Can't convert string `%s` to unsigned.",
+          str.c_str());
+
+  return ul;
+}
+
+} // !ns utils
+} // !ns ttt
+
 #ifndef NDEBUG
 #define DASSERT(__cond, __msg, ...) ASSERT(__cond, __msg, #__VA_ARGS__)
 #else

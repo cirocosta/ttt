@@ -22,39 +22,6 @@ const static char* CLI_HELP =
     "\t-u\tUse UDP instead of TCP [optional]\n"
     "\n";
 
-UserPtr login(Client& client)
-{
-  std::string login;
-  std::string pwd;
-  double msg_id = 0;
-
-  cout << "Welcome to TTT!\n"
-       << "Please enter your userid and password.\n"
-       << "If you're not registered a new account will be created\n"
-       << "\n";
-
-  while (1) {
-    cout << "User: ";
-    cin >> login;
-    cout << "\nPassword: ";
-    cin >> pwd;
-
-    // something like that ...
-    client.sendMsg(CMD_IN, { login, pwd });
-    std::vector<Message> msgs = client.waitMsgs();
-
-    // should actually return:
-    //  RPL_OK
-    //  RPL_ ... the state of the user in the database
-    if (msgs[0].command == RPL_OK) {
-      LOGERR("Logged!");
-      break;
-    }
-  }
-
-  return UserPtr(new User(login, pwd));
-}
-
 int main(int argc, char* argv[])
 {
   bool useUdp = false;
@@ -72,7 +39,7 @@ int main(int argc, char* argv[])
 
   Client client(addr, useUdp);
   client.init();
-  UserPtr user = login(client);
+  client.cmd_login();
 
   return 0;
 }

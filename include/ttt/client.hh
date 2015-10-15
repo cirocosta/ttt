@@ -3,6 +3,7 @@
 
 #include "ttt/tls_connection.hh"
 #include "ttt/protocol/msg.hh"
+#include "ttt/user.hh"
 
 #include <initializer_list>
 
@@ -28,6 +29,7 @@ using namespace protocol;
 struct Client {
   std::string server_addr;
   bool isUdp;
+  UserPtr user;
 
   ConnectionPtr conn;
 
@@ -36,6 +38,8 @@ struct Client {
   void init();
   void sendMsg(COMMAND cmd, std::initializer_list<std::string> args);
   std::vector<Message> waitMsgs();
+
+  void cmd_login();
 };
 
 }; // !ns ttt
